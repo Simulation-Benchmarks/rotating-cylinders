@@ -1,0 +1,37 @@
+name: Merge docs into notebook
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  merge-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Merge docs into rotating-cylinders notebook
+        run: |
+          python scripts/merge_docs_to_notebook.py \
+            --doc docs/rotating-cylinders.md \
+            --notebook notebooks/rotating_cylinders.ipynb \
+            --repo "${{ github.repository }}" \
+            --branch "${{ github.ref_name }}" \
+            --new notebooks/rotating_cylinders.generated.ipynb
+
+      - name: Upload generated notebook as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: notebook-rotating-cylinders
+          path: notebooks/rotating_cylinders.generated.ipynb
+          if-no-files-found: error
+          retention-days: 14
