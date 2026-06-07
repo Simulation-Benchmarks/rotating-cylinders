@@ -126,14 +126,20 @@ def split_script_into_chunks(script_path: str) -> list:
         chunks.insert(0, header_source + "\n")
 
     if main_block is not None:
-        body_source = "".join(slice_source(n) for n in main_block.body).strip("\n")
+        body_source = "".join(slice_source(n) for n in main_block.body)
         if body_source:
-            chunks.append(
-                "# Run as __main__: the `if __name__ == \"__main__\":` "
-                "guard has been stripped by build_notebook.py.\n"
-                + body_source
-                + "\n"
-            )
+            # Dedent: the body of `if __name__ == "__main__":` is indented
+            # in the source; we strip the guard so the cell must be at
+            # module level.
+            import textwrap
+            body_source = textwrap.dedent(body_source).strip("\n")
+            if body_source:
+                chunks.append(
+                    "# Run as __main__: the `if __name__ == \"__main__\":` "
+                    "guard has been stripped by build_notebook.py.\n"
+                    + body_source
+                    + "\n"
+                )
 
     return chunks
 
