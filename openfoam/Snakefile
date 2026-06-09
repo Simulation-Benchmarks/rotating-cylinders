@@ -1,0 +1,55 @@
+import json
+from pathlib import Path
+
+with open("parameters.json") as f:
+    config = json.load(f)
+
+_SNAKEFILE_DIR = Path(workflow.snakefile).resolve().parent
+
+rule all:
+    input: "solution_metrics.json"
+
+rule run_simulation_container:
+    input:
+        template="system/blockMeshDict.template"
+    output:
+        directory("10000"),
+        "log.simpleFoam"
+    params:
+        r0=config["domain"]["r1"],
+        r1=config["domain"]["r2"],
+        nr=config["grid"]["cells_radial"],
+        ntheta=config["grid"]["cells_angular"] // 4,
+        g=config["grid"]["grading"],
+        omega=config["problem"]["omega1"]
+    resources:
+        serial_run=1
+    container: "docker://opencfd/openfoam-run:2412"
+    shell:
+        """
+        set -euo pipefail
+
+        sed -e "s/{{r0}}/{params.r0}/g" \
+            -e "s/{{r1}}/{params.r1}/g" \
+            -e "s/{{nr}}/{params.nr}/g" \
+            -e "s/{{ntheta}}/{params.ntheta}/g" \
+            -e "s/{{g}}/{params.g}/g" \
+            {input.template} > system/blockMeshDict
+        sed -i "s/{{omega}}/{params.omega}/g" constant/MRFProperties
+
+        set +u && source /usr/lib/openfoam/openfoam2412/etc/bashrc && set -u
+        chmod +x Allrun
+        ./Allrun
+
+        ls -la
+        tail log.simpleFoam
+        """
+
+rule compute_l2_error:
+    input:
+        sim_done="log.simpleFoam",
+        script=ancient(str(_SNAKEFILE_DIR / "compute_l2_error.py"))
+    output:
+        "solution_metrics.json"
+    shell:
+        "python3 {input.script} {_SNAKEFILE_DIR}/results"

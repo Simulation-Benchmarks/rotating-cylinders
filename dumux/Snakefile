@@ -11,15 +11,13 @@ rule all:
     input:
         "solution_metrics.json",
         "test_rotatingcylinders.zip"
-        # "test_rotatingcylinders-00000.vtu"
 
 rule run_simulation:
     input:
         rc_parameters_file = "parameters.json"
     output:
         zip = "test_rotatingcylinders.zip",
-        metrics = "solution_metrics.json",
-        # "test_rotatingcylinders-00000.vtu"
+        metrics = "solution_metrics.json"
     resources:
         serial_run=1
     singularity:
