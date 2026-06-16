@@ -37,17 +37,20 @@ for param_file in root_dir.glob("parameters_*.json"):
             json.dump(data, outfile, indent=2)
     
         # Run the Snakemake workflow for the configuration
-        subprocess.run([
-            "snakemake",
-            "-s", str(snakefile_path),
-            "--use-singularity",
-            "--cores", "all",
-            "--resources", "serial_run=1",
-            "--singularity-args", f"--bind {root_dir}:/dumux/shared",
-            "--config", f'conf_name="{config_name}"',
-            "--force"
-        ], check=True, cwd=output_dir)
-        print(f"Workflow executed successfully for {config_name}.")
+        try:
+            subprocess.run([
+                "snakemake",
+                "-s", str(snakefile_path),
+                "--use-singularity",
+                "--cores", "all",
+                "--resources", "serial_run=1",
+                "--singularity-args", f"--bind {root_dir}:/dumux/shared",
+                "--config", f'conf_name="{config_name}"',
+                "--force"
+            ], check=True, cwd=output_dir)
+            print(f"Workflow executed successfully for {config_name}.")
+        except subprocess.CalledProcessError as e:
+            print(f"Workflow failed for {config_name} with return code {e.returncode}.")
         
 print("\nAll configurations processed.")    
 

@@ -47,15 +47,18 @@ for param_file in root_dir.glob("parameters_*.json"):
         print(f"Extracted output_template.zip to: {output_dir}")
 
         # Run the Snakemake workflow for the configuration
-        subprocess.run([
-            "snakemake",
-            "-s", str(snakefile_path),
-            "--use-singularity",
-            "--cores", "all",
-            "--resources", "serial_run=1",
-            "--force"
-        ], check=True, cwd=output_dir)
-        print(f"Workflow executed successfully for {config_name}.")
+        try:
+            subprocess.run([
+                "snakemake",
+                "-s", str(snakefile_path),
+                "--use-singularity",
+                "--cores", "all",
+                "--resources", "serial_run=1",
+                "--force"
+            ], check=True, cwd=output_dir)
+            print(f"Workflow executed successfully for {config_name}.")
+        except subprocess.CalledProcessError as e:
+            print(f"Workflow failed for {config_name} with return code {e.returncode}.")
 
         # Zip all output files except solution_metrics.json, then remove the originals
         output_zip_path = output_dir / f"{config_name}_files.zip"
