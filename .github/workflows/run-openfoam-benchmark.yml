@@ -34,17 +34,17 @@ jobs:
           apptainer-version: 1.4.5
 
       - name: Update environment
-        run: mamba env update -n model-validation -f environment_benchmarks.yml
+        run: mamba env update -n model-validation -f $GITHUB_WORKSPACE/openfoam/environment_benchmarks.yml
 
       - name: Simulate rotating cylinders using OpenFOAM
         shell: bash -l {0}
         run: |
-          cd $GITHUB_WORKSPACE/benchmarks/rotating-cylinders/openfoam
+          cd $GITHUB_WORKSPACE/openfoam
           python3 run_benchmark.py
 
       - name: Upload OpenFOAM results
         uses: actions/upload-artifact@v4
         with:
           name: results
-          path: benchmarks/rotating-cylinders/openfoam/results
+          path: $GITHUB_WORKSPACE/openfoam/results
           retention-days: 5

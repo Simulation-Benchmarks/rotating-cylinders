@@ -24,7 +24,7 @@ jobs:
         run: |
           python scripts/build_notebook.py \
             --doc docs/rotating-cylinders.md \
-            --script dumux/convergence_test.py \
+            --script plot_convergence.py \
             --notebook notebooks/rotating_cylinders.ipynb \
             --repo "${{ github.repository }}" \
             --branch "${{ github.ref_name }}"
