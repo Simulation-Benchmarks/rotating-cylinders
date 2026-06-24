@@ -1,14 +1,12 @@
-name: model-validation
+name: dumux-model-validation
 channels:
   - conda-forge
   - bioconda
 dependencies:
   - snakemake
-  - nextflow
-  - pyvista
-  - meshio
-  - conda-lock
-  - conda
+  - rdflib
   - pip
   - pip:
-      - "git+https://github.com/izus-fokus/snakemake-report-plugin-metadata4ing@v1.2.6#egg=snakemake-report-plugin-metadata4ing"
+      - rocrate
+      - roc-validator
+      - "git+https://github.com/izus-fokus/snakemake-report-plugin-metadata4ing@v2.0.2#egg=snakemake-report-plugin-metadata4ing"

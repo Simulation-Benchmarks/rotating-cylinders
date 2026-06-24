@@ -28,13 +28,13 @@ rule run_simulation:
             data = json.load(f)
 
         conf_name = data['configuration']
-        r1, r2 = data['domain']['r1'], data['domain']['r2']
-        c_radial = data['grid']['cells_radial']
-        c_angular = data['grid']['cells_angular']
-        grading = data['grid']['grading']
-        omega1 = data['problem']['omega1']
-        omega2 = data['problem']['omega2']
-        
+        r1, r2 = data['inner_radius[m]'], data['outer_radius[m]']
+        c_radial = data['cells_radial']
+        c_angular = data['cells_angular']
+        grading = data['mesh_grading']
+        omega1 = data['angular_velocity_inner_cylinder']
+        omega2 = data['angular_velocity_outer_cylinder']
+
         midpoint = 0.5 * (r1 + r2)
         half_radial = int(c_radial / 2)
 
