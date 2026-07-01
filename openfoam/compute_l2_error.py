@@ -156,27 +156,27 @@ def compute_cell_centres_and_areas(mesh_dir: Path):
 # Analytical solution (Taylor-Couette)
 # ---------------------------------------------------------------------------
 
-def analytical_v_theta(r, r1, r2, omega1, omega2=0.0):
-    A = (omega2 * r2**2 - omega1 * r1**2) / (r2**2 - r1**2)
-    B = (omega1 - omega2) * r1**2 * r2**2 / (r2**2 - r1**2)
+def analytical_v_theta(r, r0, r1, omega, omega2=0.0):
+    A = (omega2 * r1**2 - omega * r0**2) / (r1**2 - r0**2)
+    B = (omega - omega2) * r0**2 * r1**2 / (r1**2 - r0**2)
     return A * r + B / r
 
 
-def analytical_velocity_xy(x, y, r1, r2, omega1, omega2=0.0):
+def analytical_velocity_xy(x, y, r0, r1, omega, omega2=0.0):
     """Returns (vx, vy) arrays at cell centres."""
     r       = np.sqrt(x**2 + y**2)
     theta   = np.arctan2(y, x)
-    v_theta = analytical_v_theta(r, r1, r2, omega1, omega2)
+    v_theta = analytical_v_theta(r, r0, r1, omega, omega2)
     vx = -v_theta * np.sin(theta)
     vy =  v_theta * np.cos(theta)
     return vx, vy
 
 
-def analytical_pressure_kinematic(x, y, r1, r2, omega1, omega2=0.0):
+def analytical_pressure_kinematic(x, y, r0, r1, omega, omega2=0.0):
     """Kinematic pressure p/rho (up to constant C)."""
     r = np.sqrt(x**2 + y**2)
-    A = (omega2 * r2**2 - omega1 * r1**2) / (r2**2 - r1**2)
-    B = (omega1 - omega2) * r1**2 * r2**2 / (r2**2 - r1**2)
+    A = (omega2 * r1**2 - omega * r0**2) / (r1**2 - r0**2)
+    B = (omega - omega2) * r0**2 * r1**2 / (r1**2 - r0**2)
     return A**2 * r**2 / 2.0 + 2*A*B * np.log(r) - B**2 / (2*r**2)
 
 
@@ -211,11 +211,10 @@ def process_config(case_dir: Path) -> dict | None:
         return None
 
     params = json.loads(params_file.read_text())
-    r1     = params["domain"]["r1"]
-    r2     = params["domain"]["r2"]
-    omega1 = params["problem"]["omega1"]
-    omega2 = params["problem"].get("omega2", 0.0)
-
+    r0 = params['inner_radius[m]'] 
+    r1 = params['outer_radius[m]']
+    omega = params['angular_velocity_inner_cylinder']
+    
     # locate latest time directory
     time_dirs = sorted(
         [d for d in case_dir.iterdir()
@@ -254,10 +253,10 @@ def process_config(case_dir: Path) -> dict | None:
     cx, cy = centres[:, 0], centres[:, 1]
 
     # --- analytical fields at cell centres ---
-    vx_ex, vy_ex = analytical_velocity_xy(cx, cy, r1, r2, omega1, omega2)
+    vx_ex, vy_ex = analytical_velocity_xy(cx, cy, r0, r1, omega, 0.0)
     U_exact = np.stack([vx_ex, vy_ex], axis=1)
 
-    p_exact = analytical_pressure_kinematic(cx, cy, r1, r2, omega1, omega2)
+    p_exact = analytical_pressure_kinematic(cx, cy, r0, r1, omega, 0.0)
 
     # --- pressure offset correction (mirrors DuMux: subtract sim-exact at cell 0) ---
     # DuMux subtracts (sim_p[0] - exact_p[0]) from the entire pressure vector
@@ -287,10 +286,28 @@ def process_config(case_dir: Path) -> dict | None:
 # ---------------------------------------------------------------------------
 
 def main():
+    # Single-case mode: process one case directory directly (used by the
+    # Snakemake rule, where the current directory IS the case directory).
+    if len(sys.argv) > 2 and sys.argv[1] == "--single-case":
+        case_dir = Path(sys.argv[2]).resolve()
+        if not case_dir.exists():
+            print(f"Error: case directory not found: {case_dir}")
+            sys.exit(1)
+
+        print(f"Processing single case: {case_dir}\n")
+        metrics = process_config(case_dir)
+        if metrics is None:
+            print("\nFailed to process case.")
+            sys.exit(1)
+
+        print(f"\nProcessed 1 configuration.")
+        return
+
+    # Batch mode: scan a results directory containing multiple case subfolders.
     if len(sys.argv) > 1:
         results_dir = Path(sys.argv[1]).resolve()
-    # else:
-    #     results_dir = Path(__file__).resolve().parent / "results"
+    else:
+        results_dir = Path(__file__).resolve().parent / "results"
 
     if not results_dir.exists():
         print(f"Error: results directory not found: {results_dir}")
@@ -309,7 +326,7 @@ def main():
         params = json.loads((case_dir / "parameters.json").read_text())
         all_results.append({
             "conf":         case_dir.name,
-            "cells_radial": params["grid"]["cells_radial"],
+            "cells_radial": params['cells_radial'],
             **metrics,
         })
 

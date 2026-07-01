@@ -1,0 +1,186 @@
+name: Rotating Cylinders CI
+on:
+  push:
+    branches:
+      - adding_rocrate
+
+  pull_request:
+    branches:
+      - adding_rocrate
+
+  workflow_dispatch:
+
+  # schedule:
+  #   - cron: '3 17 * * *'
+
+env:
+  BENCHMARK_NAME: rotating-cylinders
+  BENCHMARK_VERSION: 1.0.0
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  BRANCH_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CODE_REPOSITORY_URL: https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name }}
+  USE_PRODUCTION_ROHUB: true
+
+jobs:
+  run-examples:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tool: dumux
+            used_software_url: https://zbmath.org/software/14293
+          - tool: openfoam
+            used_software_url: https://zbmath.org/software/4317
+
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v4
+
+      - name: Setup Mambaforge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          activate-environment: rotating-cylinders-model-validation
+          use-mamba: true
+          conda-remove-defaults: true
+
+      - name: Set strict channel priority
+        run: conda config --set channel_priority strict
+
+      - name: Setup Apptainer
+        uses: eWaterCycle/setup-apptainer@v2
+        with:
+          apptainer-version: 1.4.5
+
+      - name: Update environment
+        run: mamba env update -n rotating-cylinders-model-validation -f $GITHUB_WORKSPACE/environment_benchmarks.yml
+
+      - name: Install RoHub package
+        shell: bash -l {0}
+        run: python -m pip install rohub
+
+      - name: Run ${{ matrix.tool }} benchmark & validate convergence
+        shell: bash -l {0}
+        run: |
+          cd $GITHUB_WORKSPACE/${{ matrix.tool }}
+          python3 run_benchmark.py \
+            --benchmark-file benchmark.json \
+            --benchmark-zip ../rotating-cylinders.zip \
+            --result-path ./results
+
+      # NOTE: create_rocrate.py expects each result subfolder to already
+      # contain a per-run subcrate zip matching *-<run-folder-name>.zip
+      # (produced by run_benchmark.py itself). It also imports the `rocrate`
+      # package - make sure that's available in the model-validation env,
+      # since this step runs before the provenance env is ever activated.
+      - name: Create ${{ matrix.tool }} RO-Crate
+        shell: bash -l {0}
+        run: |
+          python provenance/create_rocrate.py \
+            --benchmark-file "${GITHUB_WORKSPACE}/${{ matrix.tool }}/benchmark.json" \
+            --simulation-result-path "${GITHUB_WORKSPACE}/${{ matrix.tool }}/results" \
+            --rocrate-path "${GITHUB_WORKSPACE}/${{ matrix.tool }}/results/${{ matrix.tool }}_rocrate.zip" \
+            --software-name "${{ matrix.tool }}"
+
+      - name: Archive ${{ matrix.tool }} results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.tool }}_results_${{ env.BENCHMARK_NAME }}
+          path: |
+            ${{ matrix.tool }}/results/
+
+      - name: Archive ${{ matrix.tool }} aggregate RO-Crate artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.tool }}-aggregate-rocrate
+          path: ${{ github.workspace }}/${{ matrix.tool }}/results/${{ matrix.tool }}_rocrate.zip
+
+      - name: Upload ${{ matrix.tool }} RO-Crate Zip file onto RoHub
+        id: rohub_upload
+        shell: bash -l {0}
+        continue-on-error: true
+        run: |
+          TOOL="${{ matrix.tool }}"
+          TOOL_NAME="${TOOL^}"
+          ROCRATE_TITLE="Rotating Cylinders Provenance (${TOOL_NAME}) ${BENCHMARK_VERSION}"
+
+          if [ "${USE_PRODUCTION_ROHUB}" = "true" ]; then
+            ROHUB_USERNAME="${{ secrets.ROHUB_PROD_USERNAME }}"
+            ROHUB_PASSWORD="${{ secrets.ROHUB_PROD_PASSWORD }}"
+          else
+            ROHUB_USERNAME="${{ secrets.ROHUB_DEV_USERNAME }}"
+            ROHUB_PASSWORD="${{ secrets.ROHUB_DEV_PASSWORD }}"
+          fi
+
+          if [ "${BRANCH_NAME}" != "main" ]; then
+            ROCRATE_TITLE="${ROCRATE_TITLE}_${BRANCH_COMMIT_SHA:0:7}"
+          fi
+
+          python provenance/upload_provenance.py \
+            --provenance_folderpath "${GITHUB_WORKSPACE}/${TOOL}/results/${TOOL}_rocrate.zip" \
+            --benchmark-name "${BENCHMARK_NAME}" \
+            --username "${ROHUB_USERNAME}" \
+            --password "${ROHUB_PASSWORD}" \
+            --rocrate-title "${ROCRATE_TITLE}" \
+            --code-repository-url "${CODE_REPOSITORY_URL}" \
+            --used-software-url "${{ matrix.used_software_url }}" \
+            --use-production-rohub "${USE_PRODUCTION_ROHUB}"
+
+  wait-for-rohub-processing:
+    runs-on: ubuntu-latest
+    needs: run-examples
+    steps:
+      - name: Wait for RoHub processing
+        run: sleep 600
+
+  process-artifacts:
+    runs-on: ubuntu-latest
+    needs: wait-for-rohub-processing
+    steps:
+      - name: Checkout repo content
+        uses: actions/checkout@v4
+
+      # plot_convergence.py needs both solvers' results/ folders sitting as
+      # siblings on the same runner (matrix jobs run in parallel on separate
+      # runners and don't share a filesystem), so we pull both artifacts
+      # down here before plotting.
+      - name: Download dumux results
+        uses: actions/download-artifact@v4
+        with:
+          name: dumux_results_${{ env.BENCHMARK_NAME }}
+          path: dumux/results
+
+      - name: Download openfoam results
+        uses: actions/download-artifact@v4
+        with:
+          name: openfoam_results_${{ env.BENCHMARK_NAME }}
+          path: openfoam/results
+
+      - name: Setup Mambaforge with provenance env
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          activate-environment: rotating-cylinders-provenance
+          use-mamba: true
+          environment-file: provenance/environment_provenance.yml
+          conda-remove-defaults: true
+
+      - name: Generate convergence plots
+        shell: bash -l {0}
+        run: |
+          # plot_convergence.py derives its root dir from its own file
+          # location and scans that dir's immediate subdirectories for a
+          # results/ folder, so it must sit next to dumux/ and openfoam/
+          # (repo root) rather than inside scripts/.
+          cp $GITHUB_WORKSPACE/scripts/plot_convergence.py $GITHUB_WORKSPACE/plot_convergence.py
+          cd $GITHUB_WORKSPACE
+          python3 plot_convergence.py
+
+      - name: Upload convergence plots
+        uses: actions/upload-artifact@v4
+        with:
+          name: convergence-plots
+          path: |
+            dumux/results/*.png
+            openfoam/results/*.png

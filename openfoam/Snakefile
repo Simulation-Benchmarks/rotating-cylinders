@@ -16,12 +16,12 @@ rule run_simulation_container:
         directory("10000"),
         "log.simpleFoam"
     params:
-        r0=config["domain"]["r1"],
-        r1=config["domain"]["r2"],
-        nr=config["grid"]["cells_radial"],
-        ntheta=config["grid"]["cells_angular"] // 4,
-        g=config["grid"]["grading"],
-        omega=config["problem"]["omega1"]
+        r0 = config['inner_radius[m]'], 
+        r1 = config['outer_radius[m]'],
+        nr = config['cells_radial'],
+        ntheta = config['cells_angular'] // 4,
+        g = config['mesh_grading'],
+        omega = config['angular_velocity_inner_cylinder']
     resources:
         serial_run=1
     container: "docker://opencfd/openfoam-run:2412"
@@ -48,8 +48,8 @@ rule run_simulation_container:
 rule compute_l2_error:
     input:
         sim_done="log.simpleFoam",
-        script=ancient(str(_SNAKEFILE_DIR / "compute_l2_error.py"))
+        script=ancient("compute_l2_error.py")
     output:
         "solution_metrics.json"
     shell:
-        "python3 {input.script} {_SNAKEFILE_DIR}/results"
+        "python3 {input.script} --single-case ."

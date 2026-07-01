@@ -1,4 +1,4 @@
-"""Run the Fenics benchmark for each semantic benchmark configuration."""
+"""Run the dumux benchmark for each semantic benchmark configuration."""
 
 import argparse
 import json
@@ -23,12 +23,12 @@ import semantic_benchmark
 LOG_FORMAT = "%(levelname)s:%(name)s:%(message)s"
 LOGGER = logging.getLogger(__name__)
 
-TOOL_NAME = "Fenics"
+TOOL_NAME = "dumux"
 BENCHMARK_DIR = Path(__file__).resolve().parent
 
 PROVENANCE_REPORTER_NAME = "metadata4ing"
 PROVENANCE_REPORT_NAME = "NFDI4Ing Provenance"
-PROVENANCE_REPORT_DESCRIPTION = "Benchmark for linear-elastic plate with a hole"
+PROVENANCE_REPORT_DESCRIPTION = "Benchmark for rotating cylinders"
 PROVENANCE_REPORT_LICENSE = "https://opensource.org/licenses/MIT"
 PROVENANCE_PROFILE = "provenance-run-crate-0.5"
 

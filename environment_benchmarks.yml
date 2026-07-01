@@ -1,4 +1,4 @@
-name: dumux-model-validation
+name: rotating-cylinders-model-validation
 channels:
   - conda-forge
   - bioconda
