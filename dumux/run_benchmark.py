@@ -314,7 +314,7 @@ def run_benchmark(args: Namespace) -> None:
     """Run a complete Fenics benchmark workflow from parsed arguments."""
     configure_logging()
 
-    extract_benchmark_archive(args.benchmark_zip, BENCHMARK_DIR)
+    #extract_benchmark_archive(args.benchmark_zip, BENCHMARK_DIR)
     shared_env_dir = create_shared_conda_env_dir(BENCHMARK_DIR)
 
     benchmark = load_benchmark(args.benchmark_file)
