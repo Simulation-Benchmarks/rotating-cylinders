@@ -79,7 +79,7 @@ jobs:
         shell: bash -l {0}
         run: |
           cd "$GITHUB_WORKSPACE/${{ matrix.tool }}/"
-          conda run -n "${{ matrix.tool }}" python run_benchmark.py \
+          python3 run_benchmark.py \
             --benchmark-file "${GITHUB_WORKSPACE}/${EXAMPLE_BENCHMARK_FILE}" \
             --rocrate-name "${{ matrix.tool }}_rocrate.zip" \
             --result-path "${GITHUB_WORKSPACE}/${{ matrix.tool }}/results" 
