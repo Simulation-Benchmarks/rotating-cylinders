@@ -21,7 +21,7 @@ rule run_simulation_container:
         nr = config['cells_radial'],
         ntheta = config['cells_angular'] // 4,
         g = config['mesh_grading'],
-        omega = config['angular_velocity_inner_cylinder']
+        omega = config['angular_velocity_inner_cylinder[rad/s]']
     resources:
         serial_run=1
     container: "docker://opencfd/openfoam-run:2412"

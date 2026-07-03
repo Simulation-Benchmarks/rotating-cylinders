@@ -32,8 +32,8 @@ rule run_simulation:
         c_radial = data['cells_radial']
         c_angular = data['cells_angular']
         grading = data['mesh_grading']
-        omega1 = data['angular_velocity_inner_cylinder']
-        omega2 = data['angular_velocity_outer_cylinder']
+        omega1 = data['angular_velocity_inner_cylinder[rad/s]']
+        omega2 = data['angular_velocity_outer_cylinder[rad/s]']
 
         midpoint = 0.5 * (r1 + r2)
         half_radial = int(c_radial / 2)

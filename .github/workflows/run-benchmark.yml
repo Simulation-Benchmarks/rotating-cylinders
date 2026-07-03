@@ -67,11 +67,10 @@ jobs:
         run: |
           mkdir -p "${GITHUB_WORKSPACE}/downloaded-benchmark"
 
-          python provenance/download_benchmark.py \
+          python "${GITHUB_WORKSPACE}/provenance/download_benchmark.py" \
             --identifier "${BENCHMARK_ROHUB_IDENTIFIER}" \
             --username "${{ secrets.ROHUB_PROD_USERNAME }}" \
             --password "${{ secrets.ROHUB_PROD_PASSWORD }}" \
-            --zip-resource-filename "${GITHUB_WORKSPACE}/${EXAMPLE_BENCHMARK_DIR}/${BENCHMARK_NAME}.zip" \
             --semantic-resource-filename "${GITHUB_WORKSPACE}/${EXAMPLE_BENCHMARK_FILE}" \
             --use-production-rohub True
       
@@ -118,7 +117,7 @@ jobs:
             ROCRATE_TITLE="${ROCRATE_TITLE}_${BRANCH_COMMIT_SHA:0:7}"
           fi
 
-          python provenance/upload_provenance.py \
+          python "${GITHUB_WORKSPACE}/provenance/upload_provenance.py" \
             --provenance_folderpath "${GITHUB_WORKSPACE}/${TOOL}/results/${TOOL}_rocrate.zip" \
             --benchmark-name "${BENCHMARK_NAME}" \
             --username "${ROHUB_USERNAME}" \
