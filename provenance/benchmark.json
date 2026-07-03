@@ -1,6 +1,6 @@
 {
   "@context": {
-    "local": "https://github.com/BAMresearch/NFDI4IngModelValidationPlatform/",
+    "local": "https://github.com/Simulation-Benchmarks/rotating-cylinders/",
     "@vocab": "http://w3id.org/nfdi4ing/metadata4ing#",
     "brick": "https://brickschema.org/schema/Brick#",
     "csvw": "http://www.w3.org/ns/csvw#",
@@ -555,90 +555,48 @@
   },
   "@graph": [
     {
-      "@id": "local:bm-linear-elastic-plate",
+      "@id": "local:bm-rotating-cylinders",
       "@type": "m4i:Benchmark",
-      "label": "linear-elastic plate with hole",
+      "label": "rotating cylinders",
       "investigates": {
-        "@id": "https://portal.mardi4nfdi.de/entity/Q6775295"
+        "@id": "https://portal.mardi4nfdi.de/entity/Q6830614"
       },
       "uses": {
-        "@id": "https://portal.mardi4nfdi.de/entity/Q6775296"
+        "@id": "https://portal.mardi4nfdi.de/entity/Q6830614"
       },
       "evaluates": [
         {
-          "@id": "local:metric_number_of_dofs"
+          "@id": "local:metric-relative-l2-error-for-pressure"
         },
         {
-          "@id": "local:metric_max_von_mises_stress"
-        },
-        {
-          "@id": "local:metric_l2_error_displacement"
-        },
-        {
-          "@id": "local:metric_max_displacement_error"
-        },
-        {
-          "@id": "local:metric_reaction_force_left_boundary_x"
-        },
-        {
-          "@id": "local:metric_reaction_force_left_boundary_y"
-        },
-        {
-          "@id": "local:metric_displacement_top_right_corner"
+          "@id": "local:metric-relative-l2-error-for-velocity"
         }
       ],
       "has parameter set": [
         {
-          "@id": "local:configuration_1"
+          "@id": "local:configuration_100_0_20_80"
         },
         {
-          "@id": "local:configuration_05"
+          "@id": "local:configuration_100_0_40_160"
         },
         {
-          "@id": "local:configuration_025"
-        },
-        {
-          "@id": "local:configuration_0125"
-        },
-        {
-          "@id": "local:configuration_00625"
-        },
-        {
-          "@id": "local:configuration_003125"
-        },
-        {
-          "@id": "local:configuration_fun2"
-        },
-        {
-          "@id": "local:configuration_fun2fine"
-        },
-        {
-          "@id": "local:configuration_fun2_025"
-        },
-        {
-          "@id": "local:configuration_fun2_0125"
-        },
-        {
-          "@id": "local:configuration_fun2_00625"
-        },
-        {
-          "@id": "local:configuration_fun2_003125"
+          "@id": "local:configuration_100_0_80_320"
         }
       ],
       "describedAsDocumentedBy": {
         "@id": "local:publication"
       },
-      "schema:version":"1.0.0"
+      "schema:version": "1.0.0"
     },
     {
-      "@id": "https://portal.mardi4nfdi.de/entity/Q6775295",
+      "@id": "https://portal.mardi4nfdi.de/entity/Q6830614",
       "@type": "mathmod:ResearchProblem",
-      "label": "Plate with a hole"
+      "label": "Taylor–Couette flow"
     },
     {
-      "@id": "https://portal.mardi4nfdi.de/entity/Q6775296",
+      "@id": "https://portal.mardi4nfdi.de/entity/Q6830614",
       "@type": "mathmod:MathematicalModel",
-      "label": "plate with a hole: linear elasticity model"
+      "label": "Taylor–Couette flow"
     },
     {
       "@id": "local:publication",
@@ -646,256 +604,22 @@
       "label": "Publication"
     },
     {
-      "@id": "local:field_max_von_mises_stress",
+      "@id": "local:field-relative-l2-error-for-pressure",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Double"
       },
       "represents": {
-        "@id": "local:metric_max_von_mises_stress"
+        "@id": "local:metric-relative-l2-error-for-pressure"
       },
       "source": {
-        "@id": "local:source_max_von_mises_stress"
+        "@id": "local:source-relative-l2-error-for-pressure"
       }
     },
     {
-      "@id": "local:metric_max_von_mises_stress",
+      "@id": "local:metric-relative-l2-error-for-pressure",
       "@type": "numerical variable",
-      "label": "max_von_mises_stress",
-      "has unit": {
-        "@id": "unit:PA"
-      },
-      "has quantity kind": {
-        "@id": "http://qudt.org/vocab/quantitykind/Stress"
-      }
-    },
-    {
-      "@id": "local:source_max_von_mises_stress",
-      "@type": "cr:DataSource",
-      "extract": {
-        "@id": "local:extract_max_von_mises_stress"
-      },
-      "file object": {
-        "@id": "local:summary_file_object"
-      }
-    },
-    {
-      "@id": "local:extract_max_von_mises_stress",
-      "@type": "cr:DataSource",
-      "jsonPath": "/max_von_mises_stress/"
-    },
-    {
-      "@id": "local:field_max_displacement_error",
-      "@type": "Field",
-      "dataType": {
-        "@id": "schema:Double"
-      },
-      "represents": {
-        "@id": "local:metric_max_displacement_error"
-      },
-      "source": {
-        "@id": "local:source_max_displacement_error"
-      }
-    },
-    {
-      "@id": "local:metric_max_displacement_error",
-      "@type": "numerical variable",
-      "label": "max_displacement_error",
-      "has unit": {
-        "@id": "unit:M"
-      },
-      "has quantity kind": {
-        "@id": "http://qudt.org/vocab/quantitykind/Displacement"
-      }
-    },
-    {
-      "@id": "local:source_max_displacement_error",
-      "@type": "cr:DataSource",
-      "extract": {
-        "@id": "local:extract_max_displacement_error"
-      },
-      "file object": {
-        "@id": "local:summary_file_object"
-      }
-    },
-    {
-      "@id": "local:extract_max_displacement_error",
-      "@type": "cr:DataSource",
-      "jsonPath": "/max_displacement_error/"
-    },
-    {
-      "@id": "local:field_l2_error_displacement",
-      "@type": "Field",
-      "dataType": {
-        "@id": "schema:Double"
-      },
-      "represents": {
-        "@id": "local:variable_l2_error_displacement"
-      },
-      "source": {
-        "@id": "local:source_l2_error_displacement"
-      }
-    },
-    {
-      "@id": "local:metric_l2_error_displacement",
-      "@type": "numerical variable",
-      "label": "l2_error_displacement",
-      "has unit": {
-        "@id": "unit:M"
-      },
-      "has quantity kind": {
-        "@id": "http://qudt.org/vocab/quantitykind/Displacement"
-      }
-    },
-    {
-      "@id": "local:source_l2_error_displacement",
-      "@type": "cr:DataSource",
-      "extract": {
-        "@id": "local:extract_l2_error_displacement"
-      },
-      "file object": {
-        "@id": "local:summary_file_object"
-      }
-    },
-    {
-      "@id": "local:extract_l2_error_displacement",
-      "@type": "cr:DataSource",
-      "jsonPath": "/l2_error_displacement/"
-    },
-    {
-      "@id": "local:field_reaction_force_left_boundary_x",
-      "@type": "Field",
-      "dataType": {
-        "@id": "schema:Double"
-      },
-      "represents": {
-        "@id": "local:metric_reaction_force_left_boundary_x"
-      },
-      "source": {
-        "@id": "local:source_reaction_force_left_boundary_x"
-      }
-    },
-    {
-      "@id": "local:metric_reaction_force_left_boundary_x",
-      "@type": "numerical variable",
-      "label": "reaction_force_left_boundary_x",
-      "has unit": {
-        "@id": "unit:N"
-      },
-      "has quantity kind": {
-        "@id": "http://qudt.org/vocab/quantitykind/Force"
-      }
-    },
-    {
-      "@id": "local:source_reaction_force_left_boundary_x",
-      "@type": "cr:DataSource",
-      "extract": {
-        "@id": "local:extract_reaction_force_left_boundary_x"
-      },
-      "file object": {
-        "@id": "local:summary_file_object"
-      }
-    },
-    {
-      "@id": "local:extract_reaction_force_left_boundary_x",
-      "@type": "cr:DataSource",
-      "jsonPath": "/reaction_force_left_boundary_x/"
-    },
-    {
-      "@id": "local:field_reaction_force_left_boundary_y",
-      "@type": "Field",
-      "dataType": {
-        "@id": "schema:Double"
-      },
-      "represents": {
-        "@id": "local:metric_reaction_force_left_boundary_y"
-      },
-      "source": {
-        "@id": "local:source_reaction_force_left_boundary_y"
-      }
-    },
-    {
-      "@id": "local:metric_reaction_force_left_boundary_y",
-      "@type": "numerical variable",
-      "label": "reaction_force_left_boundary_y",
-      "has unit": {
-        "@id": "unit:N"
-      },
-      "has quantity kind": {
-        "@id": "http://qudt.org/vocab/quantitykind/Force"
-      }
-    },
-    {
-      "@id": "local:source_reaction_force_left_boundary_y",
-      "@type": "cr:DataSource",
-      "extract": {
-        "@id": "local:extract_reaction_force_left_boundary_y"
-      },
-      "file object": {
-        "@id": "local:summary_file_object"
-      }
-    },
-    {
-      "@id": "local:extract_reaction_force_left_boundary_y",
-      "@type": "cr:DataSource",
-      "jsonPath": "/reaction_force_left_boundary_y/"
-    },
-    {
-      "@id": "local:field_displacement_top_right_corner",
-      "@type": "Field",
-      "dataType": {
-        "@id": "schema:Text"
-      },
-      "represents": {
-        "@id": "local:metric_displacement_top_right_corner"
-      },
-      "source": {
-        "@id": "local:source_displacement_top_right_corner"
-      }
-    },
-    {
-      "@id": "local:metric_displacement_top_right_corner",
-      "@type": "numerical variable",
-      "label": "displacement_top_right_corner",
-      "has unit": {
-        "@id": "unit:M"
-      },
-      "has quantity kind": {
-        "@id": "http://qudt.org/vocab/quantitykind/Displacement"
-      }
-    },
-    {
-      "@id": "local:source_displacement_top_right_corner",
-      "@type": "cr:DataSource",
-      "extract": {
-        "@id": "local:extract_displacement_top_right_corner"
-      },
-      "file object": {
-        "@id": "local:summary_file_object"
-      }
-    },
-    {
-      "@id": "local:extract_displacement_top_right_corner",
-      "@type": "cr:DataSource",
-      "jsonPath": "/displacement_top_right_corner/"
-    },
-    {
-      "@id": "local:field_number_of_dofs",
-      "@type": "Field",
-      "dataType": {
-        "@id": "schema:Double"
-      },
-      "represents": {
-        "@id": "local:metric_number_of_dofs"
-      },
-      "source": {
-        "@id": "local:source_number_of_dofs"
-      }
-    },
-    {
-      "@id": "local:metric_number_of_dofs",
-      "@type": "numerical variable",
-      "label": "number_of_dofs",
+      "label": "l2_error_pressure_rel",
       "has unit": {
         "@id": "unit:UNITLESS"
       },
@@ -904,19 +628,58 @@
       }
     },
     {
-      "@id": "local:source_number_of_dofs",
+      "@id": "local:source-relative-l2-error-for-pressure",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_number_of_dofs"
+        "@id": "local:extract-relative-l2-error-for-pressure"
       },
       "file object": {
         "@id": "local:summary_file_object"
       }
     },
     {
-      "@id": "local:extract_number_of_dofs",
+      "@id": "local:extract-relative-l2-error-for-pressure",
       "@type": "cr:DataSource",
-      "jsonPath": "/number_of_dofs/"
+      "jsonPath": "/l2_error_pressure_rel/"
+    },
+    {
+      "@id": "local:field-relative-l2-error-for-velocity",
+      "@type": "Field",
+      "dataType": {
+        "@id": "schema:Double"
+      },
+      "represents": {
+        "@id": "local:metric-relative-l2-error-for-velocity"
+      },
+      "source": {
+        "@id": "local:source-relative-l2-error-for-velocity"
+      }
+    },
+    {
+      "@id": "local:metric-relative-l2-error-for-velocity",
+      "@type": "numerical variable",
+      "label": "l2_error_velocity_rel",
+      "has unit": {
+        "@id": "unit:UNITLESS"
+      },
+      "has quantity kind": {
+        "@id": "http://qudt.org/vocab/quantitykind/Count"
+      }
+    },
+    {
+      "@id": "local:source-relative-l2-error-for-velocity",
+      "@type": "cr:DataSource",
+      "extract": {
+        "@id": "local:extract-relative-l2-error-for-velocity"
+      },
+      "file object": {
+        "@id": "local:summary_file_object"
+      }
+    },
+    {
+      "@id": "local:extract-relative-l2-error-for-velocity",
+      "@type": "cr:DataSource",
+      "jsonPath": "/l2_error_velocity_rel/"
     },
     {
       "@id": "local:simulation_run",
@@ -934,40 +697,13 @@
       ],
       "has configuration": [
         {
-          "@id": "local:configuration_1"
+          "@id": "local:configuration_100_0_20_80"
         },
         {
-          "@id": "local:configuration_05"
+          "@id": "local:configuration_100_0_40_160"
         },
         {
-          "@id": "local:configuration_025"
-        },
-        {
-          "@id": "local:configuration_0125"
-        },
-        {
-          "@id": "local:configuration_00625"
-        },
-        {
-          "@id": "local:configuration_003125"
-        },
-        {
-          "@id": "local:configuration_fun2"
-        },
-        {
-          "@id": "local:configuration_fun2fine"
-        },
-        {
-          "@id": "local:configuration_fun2_025"
-        },
-        {
-          "@id": "local:configuration_fun2_0125"
-        },
-        {
-          "@id": "local:configuration_fun2_00625"
-        },
-        {
-          "@id": "local:configuration_fun2_003125"
+          "@id": "local:configuration_100_0_80_320"
         }
       ],
       "has employed tool": [
@@ -982,7 +718,7 @@
     {
       "@id": "local:software",
       "@type": "tool",
-      "label": "FEniCS"
+      "label": "DuMux"
     },
     {
       "@id": "local:ComputingSystem",
@@ -1011,856 +747,486 @@
       "label": "solution_metrics.json"
     },
     {
-      "@id": "local:variable_radius",
-      "label": "radius",
-      "has numerical value": 0.33,
+      "@id": "local:variable_outer_radius",
+      "label": "outer_radius",
+      "has numerical value": 2.0,
       "has unit": {
         "@id": "unit:M"
       }
     },
     {
-      "@id": "local:field_radius",
+      "@id": "local:field_outer_radius",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_radius"
+        "@id": "local:variable_outer_radius"
       },
       "source": {
-        "@id": "local:source_radius"
+        "@id": "local:source_outer_radius"
       }
     },
     {
-      "@id": "local:source_radius",
+      "@id": "local:source_outer_radius",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_radius"
+        "@id": "local:extract_outer_radius"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
     {
-      "@id": "local:extract_radius",
+      "@id": "local:extract_outer_radius",
       "@type": "cr:DataSource",
-      "jsonPath": "/radius[m]"
+      "jsonPath": "/outer_radius"
     },
     {
-      "@id": "local:variable_length",
-      "label": "length",
+      "@id": "local:variable_inner_radius",
+      "label": "inner_radius",
       "has numerical value": 1.0,
       "has unit": {
         "@id": "unit:M"
       }
     },
     {
-      "@id": "local:field_length",
+      "@id": "local:field_inner_radius",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_length"
+        "@id": "local:variable_inner_radius"
       },
       "source": {
-        "@id": "local:source_length"
+        "@id": "local:source_inner_radius"
       }
     },
     {
-      "@id": "local:source_length",
+      "@id": "local:source_inner_radius",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_length"
+        "@id": "local:extract_inner_radius"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
     {
-      "@id": "local:extract_length",
+      "@id": "local:extract_inner_radius",
       "@type": "cr:DataSource",
-      "jsonPath": "/length[m]"
+      "jsonPath": "/inner_radius"
     },
     {
-      "@id": "local:variable_load",
-      "label": "load",
-      "has numerical value": 100e6,
+      "@id": "local:variable_cells_radial_20",
+      "label": "cells_radial",
+      "has numerical value": 20,
       "has unit": {
-        "@id": "unit:PA"
+        "@id": "unit:UNITLESS"
+      },
+      "has quantity kind": {
+        "@id": "http://qudt.org/vocab/quantitykind/Count"
       }
     },
     {
-      "@id": "local:field_load",
+      "@id": "local:field_cells_radial_20",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_load"
+        "@id": "local:variable_cells_radial_20"
       },
       "source": {
-        "@id": "local:source_load"
+        "@id": "local:source_cells_radial_20"
       }
     },
     {
-      "@id": "local:source_load",
+      "@id": "local:source_cells_radial_20",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_load"
+        "@id": "local:extract_cells_radial"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
     {
-      "@id": "local:extract_load",
-      "@type": "cr:DataSource",
-      "jsonPath": "/load[Pa]"
-    },
-    {
-      "@id": "local:variable_element_size_1",
-      "label": "element_size",
-      "has numerical value": 0.1,
+      "@id": "local:variable_cells_radial_40",
+      "label": "cells_radial",
+      "has numerical value": 40,
       "has unit": {
-        "@id": "unit:M"
+        "@id": "unit:UNITLESS"
+      },
+      "has quantity kind": {
+        "@id": "http://qudt.org/vocab/quantitykind/Count"
       }
     },
     {
-      "@id": "local:field_element_size_1",
+      "@id": "local:field_cells_radial_40",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_element_size_1"
+        "@id": "local:variable_cells_radial_40"
       },
       "source": {
-        "@id": "local:source_element_size_1"
+        "@id": "local:source_cells_radial_40"
       }
     },
     {
-      "@id": "local:source_element_size_1",
+      "@id": "local:source_cells_radial_40",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_element_size"
+        "@id": "local:extract_cells_radial"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
-
-
-    {
-      "@id": "local:variable_element_size_05",
-      "label": "element_size",
-      "has numerical value": 0.05,
+     {
+      "@id": "local:variable_cells_radial_80",
+      "label": "cells_radial",
+      "has numerical value": 80,
       "has unit": {
-        "@id": "unit:M"
+        "@id": "unit:UNITLESS"
+      },
+      "has quantity kind": {
+        "@id": "http://qudt.org/vocab/quantitykind/Count"
       }
     },
     {
-      "@id": "local:field_element_size_05",
+      "@id": "local:field_cells_radial_80",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_element_size_05"
+        "@id": "local:variable_cells_radial_80"
       },
       "source": {
-        "@id": "local:source_element_size_05"
+        "@id": "local:source_cells_radial_80"
       }
     },
     {
-      "@id": "local:source_element_size_05",
+      "@id": "local:source_cells_radial_80",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_element_size"
+        "@id": "local:extract_cells_radial"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
-
     {
-      "@id": "local:variable_element_size_025",
-      "label": "element_size",
-      "has numerical value": 0.025,
+      "@id": "local:extract_cells_radial",
+      "@type": "cr:DataSource",
+      "jsonPath": "/cells_radial"
+    },
+    {
+      "@id": "local:variable_cells_angular_80",
+      "label": "cells_angular",
+      "has numerical value": 80,
       "has unit": {
-        "@id": "unit:M"
+        "@id": "unit:UNITLESS"
+      },
+      "has quantity kind": {
+        "@id": "http://qudt.org/vocab/quantitykind/Count"
       }
     },
     {
-      "@id": "local:field_element_size_025",
+      "@id": "local:field_cells_angular_80",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_element_size_025"
+        "@id": "local:variable_cells_angular_80"
       },
       "source": {
-        "@id": "local:source_element_size_025"
+        "@id": "local:source_cells_angular_80"
       }
     },
     {
-      "@id": "local:source_element_size_025",
+      "@id": "local:source_cells_angular_80",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_element_size"
+        "@id": "local:extract_cells_angular"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
-
     {
-      "@id": "local:variable_element_size_0125",
-      "label": "element_size",
-      "has numerical value": 0.0125,
+      "@id": "local:variable_cells_angular_160",
+      "label": "cells_angular",
+      "has numerical value": 160,
       "has unit": {
-        "@id": "unit:M"
+        "@id": "unit:UNITLESS"
+      },
+      "has quantity kind": {
+        "@id": "http://qudt.org/vocab/quantitykind/Count"
       }
     },
     {
-      "@id": "local:field_element_size_0125",
+      "@id": "local:field_cells_angular_160",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_element_size_0125"
+        "@id": "local:variable_cells_angular_160"
       },
       "source": {
-        "@id": "local:source_element_size_0125"
+        "@id": "local:source_cells_angular_160"
       }
     },
     {
-      "@id": "local:source_element_size_0125",
+      "@id": "local:source_cells_angular_160",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_element_size"
+        "@id": "local:extract_cells_angular_160"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
-
     {
-      "@id": "local:variable_element_size_00625",
-      "label": "element_size",
-      "has numerical value": 0.00625,
+      "@id": "local:extract_cells_angular_160",
+      "@type": "cr:DataSource",
+      "jsonPath": "/cells_angular"
+    },
+    {
+      "@id": "local:variable_cells_angular_320",
+      "label": "cells_angular",
+      "has numerical value": 320,
       "has unit": {
-        "@id": "unit:M"
+        "@id": "unit:UNITLESS"
+      },
+      "has quantity kind": {
+        "@id": "http://qudt.org/vocab/quantitykind/Count"
       }
     },
     {
-      "@id": "local:field_element_size_00625",
+      "@id": "local:field_cells_angular_320",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_element_size_00625"
+        "@id": "local:variable_cells_angular_320"
       },
       "source": {
-        "@id": "local:source_element_size_00625"
+        "@id": "local:source_cells_angular_320"
       }
     },
     {
-      "@id": "local:source_element_size_00625",
+      "@id": "local:source_cells_angular_320",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_element_size"
+        "@id": "local:extract_cells_angular"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
-
     {
-      "@id": "local:variable_element_size_003125",
-      "label": "element_size",
-      "has numerical value": 0.003125,
+      "@id": "local:variable_mesh_grading",
+      "label": "mesh_grading",
+      "has numerical value": 1.1,
       "has unit": {
-        "@id": "unit:M"
+        "@id": "unit:UNITLESS"
+      },
+      "has quantity kind": {
+        "@id": "http://qudt.org/vocab/quantitykind/Count"
       }
     },
     {
-      "@id": "local:field_element_size_003125",
+      "@id": "local:field_mesh_grading",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_element_size_003125"
+        "@id": "local:variable_mesh_grading"
       },
       "source": {
-        "@id": "local:source_element_size_003125"
+        "@id": "local:source_mesh_grading"
       }
     },
     {
-      "@id": "local:source_element_size_003125",
+      "@id": "local:source_mesh_grading",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_element_size"
+        "@id": "local:extract_mesh_grading"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
     {
-      "@id": "local:extract_element_size",
+      "@id": "local:extract_mesh_grading",
       "@type": "cr:DataSource",
-      "jsonPath": "/element_size[m]"
-    },
-    
-    {
-      "@id": "local:variable_isoparametric_element_degree_1",
-      "label": "isoparametric_element_degree",
-      "has numerical value": 1
+      "jsonPath": "/mesh_grading"
     },
     {
-      "@id": "local:field_isoparametric_element_degree_1",
-      "@type": "Field",
-      "dataType": {
-        "@id": "schema:Integer"
-      },
-      "represents": {
-        "@id": "local:variable_isoparametric_element_degree_1"
-      },
-      "source": {
-        "@id": "local:source_isoparametric_element_degree_1"
-      }
-    },
-    {
-      "@id": "local:source_isoparametric_element_degree_1",
-      "@type": "cr:DataSource",
-      "extract": {
-        "@id": "local:extract_isoparametric_element_degree"
-      },
-      "file object": {
-        "@id": "local:parameter_file_object"
-      }
-    },
-
-    {
-      "@id": "local:variable_isoparametric_element_degree_2",
-      "label": "isoparametric_element_degree",
-      "has numerical value": 2
-    },
-    {
-      "@id": "local:field_isoparametric_element_degree_2",
-      "@type": "Field",
-      "dataType": {
-        "@id": "schema:Integer"
-      },
-      "represents": {
-        "@id": "local:variable_isoparametric_element_degree_2"
-      },
-      "source": {
-        "@id": "local:source_isoparametric_element_degree_2"
-      }
-    },
-    {
-      "@id": "local:source_isoparametric_element_degree_2",
-      "@type": "cr:DataSource",
-      "extract": {
-        "@id": "local:extract_isoparametric_element_degree"
-      },
-      "file object": {
-        "@id": "local:parameter_file_object"
-      }
-    },
-    {
-      "@id": "local:extract_isoparametric_element_degree",
-      "@type": "cr:DataSource",
-      "jsonPath": "/isoparametric_element_degree"
-    },
-    {
-      "@id": "local:variable_cell_type",
-      "label": "cell_type",
-      "has string value": "triangle"
-    },
-    {
-      "@id": "local:field_cell_type",
-      "@type": "Field",
-      "dataType": {
-        "@id": "schema:Text"
-      },
-      "represents": {
-        "@id": "local:variable_cell_type"
-      },
-      "source": {
-        "@id": "local:source_cell_type"
-      }
-    },
-    {
-      "@id": "local:source_cell_type",
-      "@type": "cr:DataSource",
-      "extract": {
-        "@id": "local:extract_cell_type"
-      },
-      "file object": {
-        "@id": "local:parameter_file_object"
-      }
-    },
-    {
-      "@id": "local:extract_cell_type",
-      "@type": "cr:DataSource",
-      "jsonPath": "/cell_type"
-    },
-    {
-      "@id": "local:variable_youngs_modulus",
-      "label": "youngs_modulus",
-      "has numerical value": 210e9,
+      "@id": "local:variable_angular_velocity_inner_cylinder",
+      "label": "angular_velocity_inner_cylinder",
+      "has numerical value": 100,
       "has unit": {
-        "@id": "unit:PA"
+        "@id": "unit:RAD-PER-SEC"
       }
     },
     {
-      "@id": "local:field_youngs_modulus",
+      "@id": "local:field_angular_velocity_inner_cylinder",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_youngs_modulus"
+        "@id": "local:variable_angular_velocity_inner_cylinder"
       },
       "source": {
-        "@id": "local:source_youngs_modulus"
+        "@id": "local:source_angular_velocity_inner_cylinder"
       }
     },
     {
-      "@id": "local:source_youngs_modulus",
+      "@id": "local:source_angular_velocity_inner_cylinder",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_youngs_modulus"
+        "@id": "local:extract_angular_velocity_inner_cylinder"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
     {
-      "@id": "local:extract_youngs_modulus",
+      "@id": "local:extract_angular_velocity_inner_cylinder",
       "@type": "cr:DataSource",
-      "jsonPath": "/youngs_modulus[Pa]"
+      "jsonPath": "/omega1"
     },
     {
-      "@id": "local:variable_poissons_ratio",
-      "label": "poissons_ratio",
-      "has numerical value": 0.3
+      "@id": "local:variable_angular_velocity_outer_cylinder",
+      "label": "angular_velocity_outer_cylinder",
+      "has numerical value": 0,
+      "has unit": {
+        "@id": "unit:RAD-PER-SEC"
+      }
     },
     {
-      "@id": "local:field_poissons_ratio",
+      "@id": "local:field_angular_velocity_outer_cylinder",
       "@type": "Field",
       "dataType": {
         "@id": "schema:Float"
       },
       "represents": {
-        "@id": "local:variable_poissons_ratio"
+        "@id": "local:variable_angular_velocity_outer_cylinder"
       },
       "source": {
-        "@id": "local:source_poissons_ratio"
+        "@id": "local:source_angular_velocity_outer_cylinder"
       }
     },
     {
-      "@id": "local:source_poissons_ratio",
+      "@id": "local:source_angular_velocity_outer_cylinder",
       "@type": "cr:DataSource",
       "extract": {
-        "@id": "local:extract_poissons_ratio"
+        "@id": "local:extract_angular_velocity_outer_cylinder"
       },
       "file object": {
         "@id": "local:parameter_file_object"
       }
     },
     {
-      "@id": "local:extract_poissons_ratio",
+      "@id": "local:extract_angular_velocity_outer_cylinder",
       "@type": "cr:DataSource",
-      "jsonPath": "/poissons_ratio"
+      "jsonPath": "/omega2"
     },
     {
-      "@id": "local:configuration_1",
+      "@id": "local:configuration_100_0_20_80",
       "@type": "m4i:ParameterSet",
-      "label": "Configuration 1",
-      "identifier": "1",
+      "label": "20 cells radial, 80 cells angular",
+      "identifier": "100_0_20_80",
       "has part": [
         {
-          "@id": "local:variable_radius"
+          "@id": "local:variable_inner_radius"
         },
         {
-          "@id": "local:variable_length"
+          "@id": "local:variable_outer_radius"
         },
         {
-          "@id": "local:variable_load"
+          "@id": "local:variable_cells_radial_20"
         },
         {
-          "@id": "local:variable_element_size_1"
+          "@id": "local:variable_cells_angular_80"
         },
         {
-          "@id": "local:variable_isoparametric_element_degree_1"
+          "@id": "local:variable_mesh_grading"
         },
         {
-          "@id": "local:variable_cell_type"
+          "@id": "local:variable_angular_velocity_inner_cylinder"
         },
         {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
+          "@id": "local:variable_angular_velocity_outer_cylinder"
         }
       ]
     },
     {
-      "@id": "local:configuration_05",
+      "@id": "local:configuration_100_0_40_160",
       "@type": "m4i:ParameterSet",
-      "label": "Configuration 05",
-      "identifier": "05",
+      "label": "40 cells radial, 160 cells angular",
+      "identifier": "100_0_40_160",
       "has part": [
         {
-          "@id": "local:variable_radius"
+          "@id": "local:variable_inner_radius"
         },
         {
-          "@id": "local:variable_length"
+          "@id": "local:variable_outer_radius"
         },
         {
-          "@id": "local:variable_load"
+          "@id": "local:variable_cells_radial_40"
         },
         {
-          "@id": "local:variable_element_size_05"
+          "@id": "local:variable_cells_angular_160"
         },
         {
-          "@id": "local:variable_isoparametric_element_degree_1"
+          "@id": "local:variable_mesh_grading"
         },
         {
-          "@id": "local:variable_cell_type"
+          "@id": "local:variable_angular_velocity_inner_cylinder"
         },
         {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
+          "@id": "local:variable_angular_velocity_outer_cylinder"
         }
       ]
     },
     {
-      "@id": "local:configuration_025",
+      "@id": "local:configuration_100_0_80_320",
       "@type": "m4i:ParameterSet",
-      "label": "Configuration 025",
-      "identifier": "025",
+      "label": "80 cells radial, 320 cells angular",
+      "identifier": "100_0_80_320",
       "has part": [
         {
-          "@id": "local:variable_radius"
+          "@id": "local:variable_inner_radius"
         },
         {
-          "@id": "local:variable_length"
+          "@id": "local:variable_outer_radius"
         },
         {
-          "@id": "local:variable_load"
+          "@id": "local:variable_cells_radial_80"
         },
         {
-          "@id": "local:variable_element_size_025"
+          "@id": "local:variable_cells_angular_320"
         },
         {
-          "@id": "local:variable_isoparametric_element_degree_1"
+          "@id": "local:variable_mesh_grading"
         },
         {
-          "@id": "local:variable_cell_type"
+          "@id": "local:variable_angular_velocity_inner_cylinder"
         },
         {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
-        }
-      ]
-    }, 
-    {
-      "@id": "local:configuration_0125",
-      "@type": "m4i:ParameterSet",
-      "label": "Configuration 0125",
-      "identifier": "0125",
-      "has part": [
-        {
-          "@id": "local:variable_radius"
-        },
-        {
-          "@id": "local:variable_length"
-        },
-        {
-          "@id": "local:variable_load"
-        },
-        {
-          "@id": "local:variable_element_size_0125"
-        },
-        {
-          "@id": "local:variable_isoparametric_element_degree_1"
-        },
-        {
-          "@id": "local:variable_cell_type"
-        },
-        {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
-        }
-      ]
-    },
-    {
-      "@id": "local:configuration_00625",
-      "@type": "m4i:ParameterSet",
-      "label": "Configuration 00625",
-      "identifier": "00625",
-      "has part": [
-        {
-          "@id": "local:variable_radius"
-        },
-        {
-          "@id": "local:variable_length"
-        },
-        {
-          "@id": "local:variable_load"
-        },
-        {
-          "@id": "local:variable_element_size_00625"
-        },
-        {
-          "@id": "local:variable_isoparametric_element_degree_1"
-        },
-        {
-          "@id": "local:variable_cell_type"
-        },
-        {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
-        }
-      ]
-    },
-    {
-      "@id": "local:configuration_003125",
-      "@type": "m4i:ParameterSet",
-      "label": "Configuration 003125",
-      "identifier": "003125",
-      "has part": [
-        {
-          "@id": "local:variable_radius"
-        },
-        {
-          "@id": "local:variable_length"
-        },
-        {
-          "@id": "local:variable_load"
-        },
-        {
-          "@id": "local:variable_element_size_003125"
-        },
-        {
-          "@id": "local:variable_isoparametric_element_degree_1"
-        },
-        {
-          "@id": "local:variable_cell_type"
-        },
-        {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
-        }
-      ]
-    },
-    {
-      "@id": "local:configuration_fun2",
-      "@type": "m4i:ParameterSet",
-      "label": "Configuration fun2",
-      "identifier": "fun2",
-      "has part": [
-        {
-          "@id": "local:variable_radius"
-        },
-        {
-          "@id": "local:variable_length"
-        },
-        {
-          "@id": "local:variable_load"
-        },
-        {
-          "@id": "local:variable_element_size_05"
-        },
-        {
-          "@id": "local:variable_isoparametric_element_degree_2"
-        },
-        {
-          "@id": "local:variable_cell_type"
-        },
-        {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
-        }
-      ]
-    },  
-    {
-      "@id": "local:configuration_fun2fine",
-      "@type": "m4i:ParameterSet",
-      "label": "Configuration fun2fine",
-      "identifier": "fun2fine",
-      "has part": [
-        {
-          "@id": "local:variable_radius"
-        },
-        {
-          "@id": "local:variable_length"
-        },
-        {
-          "@id": "local:variable_load"
-        },
-        {
-          "@id": "local:variable_element_size_1"
-        },
-        {
-          "@id": "local:variable_isoparametric_element_degree_2"
-        },
-        {
-          "@id": "local:variable_cell_type"
-        },
-        {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
-        }
-      ]
-    },
-    {
-      "@id": "local:configuration_fun2_025",
-      "@type": "m4i:ParameterSet",
-      "label": "Configuration fun2_025",
-      "identifier": "fun2_025",
-      "has part": [
-        {
-          "@id": "local:variable_radius"
-        },
-        {
-          "@id": "local:variable_length"
-        },
-        {
-          "@id": "local:variable_load"
-        },
-        {
-          "@id": "local:variable_element_size_025"
-        },
-        {
-          "@id": "local:variable_isoparametric_element_degree_2"
-        },
-        {
-          "@id": "local:variable_cell_type"
-        },
-        {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
-        }
-      ]
-    },
-    {
-      "@id": "local:configuration_fun2_0125",
-      "@type": "m4i:ParameterSet",
-      "label": "Configuration fun2_0125",
-      "identifier": "fun2_0125",
-      "has part": [
-        {
-          "@id": "local:variable_radius"
-        },
-        {
-          "@id": "local:variable_length"
-        },
-        {
-          "@id": "local:variable_load"
-        },
-        {
-          "@id": "local:variable_element_size_0125"
-        },
-        {
-          "@id": "local:variable_isoparametric_element_degree_2"
-        },
-        {
-          "@id": "local:variable_cell_type"
-        },
-        {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
-        }
-      ]
-    },
-    {
-      "@id": "local:configuration_fun2_00625",
-      "@type": "m4i:ParameterSet",
-      "label": "Configuration fun2_00625",
-      "identifier": "fun2_00625",
-      "has part": [
-        {
-          "@id": "local:variable_radius"
-        },
-        {
-          "@id": "local:variable_length"
-        },
-        {
-          "@id": "local:variable_load"
-        },
-        {
-          "@id": "local:variable_element_size_00625"
-        },
-        {
-          "@id": "local:variable_isoparametric_element_degree_2"
-        },
-        {
-          "@id": "local:variable_cell_type"
-        },
-        {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
-        }
-      ]
-    },
-    {
-      "@id": "local:configuration_fun2_003125",
-      "@type": "m4i:ParameterSet",
-      "label": "Configuration fun2_003125",
-      "identifier": "fun2_003125",
-      "has part": [
-        {
-          "@id": "local:variable_radius"
-        },
-        {
-          "@id": "local:variable_length"
-        },
-        {
-          "@id": "local:variable_load"
-        },
-        {
-          "@id": "local:variable_element_size_003125"
-        },
-        {
-          "@id": "local:variable_isoparametric_element_degree_2"
-        },
-        {
-          "@id": "local:variable_cell_type"
-        },
-        {
-          "@id": "local:variable_youngs_modulus"
-        },
-        {
-          "@id": "local:variable_poissons_ratio"
+          "@id": "local:variable_angular_velocity_outer_cylinder"
         }
       ]
     }

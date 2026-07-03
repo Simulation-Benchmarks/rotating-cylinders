@@ -27,14 +27,14 @@ TOOL_NAME = "openfoam"
 BENCHMARK_DIR = Path(__file__).resolve().parent
 
 PROVENANCE_REPORTER_NAME = "metadata4ing"
-PROVENANCE_REPORT_NAME = "NFDI4Ing Provenance"
-PROVENANCE_REPORT_DESCRIPTION = "Benchmark for linear-elastic plate with a hole"
+PROVENANCE_REPORT_NAME = "Rotating Cylinders Provenance"
+PROVENANCE_REPORT_DESCRIPTION = "Benchmark for rotating cylinders"
 PROVENANCE_REPORT_LICENSE = "https://opensource.org/licenses/MIT"
 PROVENANCE_PROFILE = "provenance-run-crate-0.5"
 
 UNIT_SYMBOLS = {
     "unit:M": "m",
-    "unit:PA": "Pa",
+    "unit:RAD-PER-SEC": "rad/s",
 }
 
 
@@ -65,7 +65,7 @@ def parse_arguments() -> Namespace:
     parser.add_argument(
         "--benchmark-zip",
         type=Path,
-        required=True,
+        required=False,
         help="Path to the zipped benchmark archive to extract.",
     )
     parser.add_argument(
@@ -324,7 +324,7 @@ def run_benchmark(args: Namespace) -> None:
     """Run a complete Fenics benchmark workflow from parsed arguments."""
     configure_logging()
 
-    extract_benchmark_archive(args.benchmark_zip, BENCHMARK_DIR)
+    #extract_benchmark_archive(args.benchmark_zip, BENCHMARK_DIR)
     shared_env_dir = create_shared_conda_env_dir(BENCHMARK_DIR)
 
     benchmark = load_benchmark(args.benchmark_file)

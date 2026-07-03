@@ -132,15 +132,6 @@ def run(args) -> dict[str, str]:
     
     downloaded_resources = {}
 
-    if args.zip_resource_filename:
-        downloaded_resources[SOFTWARE_SOURCE_CODE_TYPE] = (
-            _download_benchmark_resource(
-                identifier=args.identifier,
-                resource_filename=args.zip_resource_filename,
-                resource_type=SOFTWARE_SOURCE_CODE_TYPE,
-            )
-        )
-
     if args.semantic_resource_filename:
         downloaded_resources[ANNOTATION_COLLECTION_TYPE] = (
             _download_benchmark_resource(
