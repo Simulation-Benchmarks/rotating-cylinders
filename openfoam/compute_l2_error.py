@@ -213,7 +213,7 @@ def process_config(case_dir: Path) -> dict | None:
     params = json.loads(params_file.read_text())
     r0 = params['inner_radius[m]'] 
     r1 = params['outer_radius[m]']
-    omega = params['angular_velocity_inner_cylinder']
+    omega = params['angular_velocity_inner_cylinder[rad/s]']
     
     # locate latest time directory
     time_dirs = sorted(
