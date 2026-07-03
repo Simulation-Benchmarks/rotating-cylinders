@@ -1,17 +1,16 @@
 name: Rotating Cylinders CI
 on:
   push:
-    branches:
-      - adding_rocrate
 
   pull_request:
-    branches:
-      - adding_rocrate
+    branches: [ main ]
 
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-  # schedule:
-  #   - cron: '3 17 * * *'
+  # Runs the workflow once per day at 3:15am
+  schedule:
+    - cron: '0 18 * * *'
 
 env:
   BENCHMARK_NAME: rotating-cylinders
