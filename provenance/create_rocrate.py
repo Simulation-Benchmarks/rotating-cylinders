@@ -687,8 +687,8 @@ def _configure_crate_metadata(
     """
     crate.mainEntity = {"@id": snakemake_id}
     crate.license = "https://opensource.org/licenses/MIT"
-    crate.name = f"NFDI4Ing Provenance ({software_name})"
-    crate.description = "Benchmark for linear-elastic plate with a hole"
+    crate.name = f"rotating-cylinders Provenance ({software_name})"
+    crate.description = "rotating-cylinders benchmark provenance data."
     crate.metadata["conformsTo"] = ROCRATE_CONFORMS_TO
     crate.root_dataset.append_to("conformsTo", ROOT_DATASET_CONFORMS_TO)
 
