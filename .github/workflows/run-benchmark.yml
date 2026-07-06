@@ -137,25 +137,17 @@ jobs:
   process-artifacts:
     runs-on: ubuntu-latest
     needs: wait-for-rohub-processing
+    env:
+      PLOT_OUTPUT_FILE: ${{ matrix.tool }}-convergence-plot.png
+
+    strategy:
+      fail-fast: false
+      matrix:
+        tool: [dumux, openfoam]
+
     steps:
       - name: Checkout repo content
-        uses: actions/checkout@v4
-
-      # plot_convergence.py needs both solvers' results/ folders sitting as
-      # siblings on the same runner (matrix jobs run in parallel on separate
-      # runners and don't share a filesystem), so we pull both artifacts
-      # down here before plotting.
-      - name: Download dumux results
-        uses: actions/download-artifact@v4
-        with:
-          name: dumux_results_${{ env.BENCHMARK_NAME }}
-          path: dumux/results
-
-      - name: Download openfoam results
-        uses: actions/download-artifact@v4
-        with:
-          name: openfoam_results_${{ env.BENCHMARK_NAME }}
-          path: openfoam/results
+        uses: actions/checkout@v6
 
       - name: Setup Mambaforge with provenance env
         uses: conda-incubator/setup-miniconda@v3
@@ -166,21 +158,16 @@ jobs:
           environment-file: provenance/environment_provenance.yml
           conda-remove-defaults: true
 
-      - name: Generate convergence plots
+      - name: Run ${{ matrix.tool }} plotting script
         shell: bash -l {0}
         run: |
-          # plot_convergence.py derives its root dir from its own file
-          # location and scans that dir's immediate subdirectories for a
-          # results/ folder, so it must sit next to dumux/ and openfoam/
-          # (repo root) rather than inside scripts/.
-          cp $GITHUB_WORKSPACE/scripts/plot_convergence.py $GITHUB_WORKSPACE/plot_convergence.py
-          cd $GITHUB_WORKSPACE
-          python3 plot_convergence.py
+          python provenance/plot_rotating_cylinders_metrics.py \
+            --tool "${{ matrix.tool }}" \
+            --output-file "${PLOT_OUTPUT_FILE}" \
+            --use-production-rohub "${USE_PRODUCTION_ROHUB}"
 
-      - name: Upload convergence plots
-        uses: actions/upload-artifact@v4
+      - name: Upload ${{ matrix.tool }} plot artifact
+        uses: actions/upload-artifact@v6
         with:
-          name: convergence-plots
-          path: |
-            dumux/results/*.png
-            openfoam/results/*.png
+          name: ${{ matrix.tool }}-plot
+          path: ${{ env.PLOT_OUTPUT_FILE }}

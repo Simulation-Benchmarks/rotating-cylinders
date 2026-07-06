@@ -290,6 +290,7 @@ def build_annotated_ro_uuids_query(
 
 def query_sparql(query: str):
     """Run a SPARQL query against the configured RoHub endpoint."""
+    print(query)
     return rohub.query_sparql_endpoint(
         query,
         endpoint_url=rohub.settings.SPARQL_ENDPOINT,
