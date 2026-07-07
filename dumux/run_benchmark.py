@@ -88,13 +88,6 @@ def parse_arguments() -> Namespace:
     return parser.parse_args()
 
 
-def create_shared_conda_env_dir(benchmark_dir: Path) -> Path:
-    """Create and return the shared Snakemake conda environment directory."""
-    shared_env_dir = benchmark_dir / "conda_envs"
-    shared_env_dir.mkdir(parents=True, exist_ok=True)
-    return shared_env_dir
-
-
 def parameter_json_key(parameter) -> str:
     """Build the parameters.json key, including the unit suffix when present."""
     unit_symbol = UNIT_SYMBOLS.get(parameter.unit)
@@ -169,20 +162,19 @@ def copy_benchmark_files_to_output_dir(benchmark_dir: Path, output_dir: Path) ->
 
 
 def build_snakemake_command(
-    parameter_file: Path,
-    shared_env_dir: Path,
+    benchmark_dir: Path,
+    configuration: str,
 ) -> list[str]:
     """Build the base Snakemake command for one configuration."""
     return [
         "snakemake",
-        "--use-conda",
+        "-s", str(benchmark_dir/"Snakefile"),
+        "--use-singularity",
+        "--cores", "all",
+        "--resources", "serial_run=1",
+        "--singularity-args", f"--bind {REPO_ROOT}/dumux:/dumux/shared",
+        "--config", f'conf_name="{configuration}"',
         "--force",
-        "--cores",
-        "all",
-        "--conda-prefix",
-        str(shared_env_dir),
-        "--configfile",
-        str(parameter_file),
     ]
 
 
@@ -205,13 +197,12 @@ def build_provenance_reporter_args(configuration: str) -> list[str]:
 
 
 def run_snakemake_workflow(
-    parameter_file: Path,
+    benchmark_dir: Path,
     configuration: str,
-    output_dir: Path,
-    shared_env_dir: Path,
+    output_dir: Path
 ) -> None:
     """Run the Snakemake workflow normally and then with provenance reporting."""
-    base_cmd = build_snakemake_command(parameter_file, shared_env_dir)
+    base_cmd = build_snakemake_command(benchmark_dir, configuration)
     reporter_args = build_provenance_reporter_args(configuration)
 
     subprocess.run(base_cmd, check=True, cwd=output_dir)
@@ -221,7 +212,6 @@ def run_snakemake_workflow(
 def run_configuration(
     parameter_file: Path,
     benchmark_dir: Path,
-    shared_env_dir: Path,
 ) -> None:
     """Prepare and execute one benchmark configuration."""
     configuration_data = load_parameter_file(parameter_file)
@@ -233,38 +223,15 @@ def run_configuration(
 
     create_parameter_file(configuration_data, output_dir)
     copy_benchmark_files_to_output_dir(benchmark_dir, output_dir)
-    # run_snakemake_workflow(
-    #     parameter_file,
-    #     configuration,
-    #     output_dir,
-    #     shared_env_dir,
-    # )
 
-    # LOGGER.info("Workflow executed successfully for configuration %s.", configuration)
+    run_snakemake_workflow(
+        benchmark_dir,
+        configuration,
+        output_dir
+    )
 
-    # Run the Snakemake workflow for the configuration
-    try:
-        subprocess.run([
-            "snakemake",
-            "-s", str(benchmark_dir/"Snakefile"),
-            "--use-singularity",
-            "--cores", "all",
-            "--resources", "serial_run=1",
-            "--singularity-args", f"--bind {REPO_ROOT}/dumux:/dumux/shared",
-            "--config", f'conf_name="{configuration}"',
-            "--force"
-        ], check=True, cwd=output_dir)
-        LOGGER.info("Workflow executed successfully for configuration %s.", configuration)
-        
-        # Second run: generate provenance crate
-        reporter_args = build_provenance_reporter_args(configuration)
-        base_cmd = build_snakemake_command(output_dir / "parameters.json", shared_env_dir)
-        subprocess.run(base_cmd + reporter_args, check=True, cwd=output_dir)
-        LOGGER.info("Provenance crate generated for configuration %s.", configuration)
+    LOGGER.info("Workflow executed successfully for configuration %s.", configuration)
 
-    except subprocess.CalledProcessError as e:
-        LOGGER.error("Workflow failed for %s with return code %d.", configuration, e.returncode)
-        raise
 
 def create_aggregate_rocrate(
     results_dir: Path,
@@ -308,13 +275,11 @@ def run_benchmark(args: Namespace) -> None:
     """Run a complete Fenics benchmark workflow from parsed arguments."""
     configure_logging()
 
-    shared_env_dir = create_shared_conda_env_dir(BENCHMARK_DIR)
-
     benchmark = load_benchmark(args.benchmark_file)
     create_parameter_files_from_benchmark(benchmark, BENCHMARK_DIR)
 
     for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json")):
-        run_configuration(parameter_file, BENCHMARK_DIR, shared_env_dir)
+        run_configuration(parameter_file, BENCHMARK_DIR)
 
     create_aggregate_rocrate(
         args.result_path,
