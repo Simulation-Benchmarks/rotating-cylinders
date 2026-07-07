@@ -88,12 +88,6 @@ def parse_arguments() -> Namespace:
     return parser.parse_args()
 
 
-def extract_benchmark_archive(benchmark_zip: Path, output_dir: Path) -> None:
-    """Extract the zipped benchmark workflow into the tool working directory."""
-    with zipfile.ZipFile(benchmark_zip.expanduser().resolve(), "r") as zip_ref:
-        zip_ref.extractall(output_dir)
-
-
 def create_shared_conda_env_dir(benchmark_dir: Path) -> Path:
     """Create and return the shared Snakemake conda environment directory."""
     shared_env_dir = benchmark_dir / "conda_envs"
@@ -314,7 +308,6 @@ def run_benchmark(args: Namespace) -> None:
     """Run a complete Fenics benchmark workflow from parsed arguments."""
     configure_logging()
 
-    #extract_benchmark_archive(args.benchmark_zip, BENCHMARK_DIR)
     shared_env_dir = create_shared_conda_env_dir(BENCHMARK_DIR)
 
     benchmark = load_benchmark(args.benchmark_file)

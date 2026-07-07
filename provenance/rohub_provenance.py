@@ -5,8 +5,10 @@ from __future__ import annotations
 from collections.abc import Sequence
 import json
 import logging
+import os
 from pathlib import Path
 import re
+import subprocess
 import time
 from typing import Iterable
 import pandas as pd
@@ -14,6 +16,7 @@ import rohub
 
 
 CONFIG_DIR = Path(__file__).resolve().parent
+REPOSITORY_ROOT = CONFIG_DIR.parent
 LOGGER = logging.getLogger(__name__)
 
 
@@ -252,6 +255,100 @@ def benchmark_annotation_object(benchmark_name: str) -> str:
     return f"{ANNOTATION_CONFIG['benchmark_base_url']}/{benchmark_name}"
 
 
+def _run_git_command(args: Sequence[str]) -> str | None:
+    """Run a git command in the repository root and return stdout."""
+    try:
+        result = subprocess.run(
+            ["git", *args],
+            cwd=REPOSITORY_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+    value = result.stdout.strip()
+    return value or None
+
+
+def _normalize_repository_url(repository_url: str | None) -> str | None:
+    """Convert common git remote URLs to a GitHub HTTPS repository URL."""
+    if not repository_url:
+        return None
+
+    repository_url = repository_url.strip().rstrip("/")
+    ssh_match = re.match(r"git@([^:]+):(.+)", repository_url)
+    if ssh_match:
+        repository_url = f"https://{ssh_match.group(1)}/{ssh_match.group(2)}"
+
+    ssh_url_match = re.match(r"ssh://git@([^/]+)/(.+)", repository_url)
+    if ssh_url_match:
+        repository_url = (
+            f"https://{ssh_url_match.group(1)}/{ssh_url_match.group(2)}"
+        )
+
+    if repository_url.endswith(".git"):
+        repository_url = repository_url[:-4]
+
+    return repository_url
+
+
+def get_current_branch_name() -> str | None:
+    """Return the active branch name from GitHub Actions or local git."""
+    for env_name in ("GITHUB_HEAD_REF", "GITHUB_REF_NAME"):
+        branch_name = os.environ.get(env_name)
+        if branch_name:
+            return branch_name
+
+    branch_name = _run_git_command(["branch", "--show-current"])
+    if branch_name:
+        return branch_name
+
+    branch_name = _run_git_command(["rev-parse", "--abbrev-ref", "HEAD"])
+    if branch_name and branch_name != "HEAD":
+        return branch_name
+
+    return _run_git_command(["rev-parse", "HEAD"])
+
+
+def get_repository_url(benchmark_name: str | None = None) -> str | None:
+    """Return the branchless GitHub repository URL for this benchmark."""
+    github_repository = os.environ.get("GITHUB_REPOSITORY")
+    if github_repository:
+        github_server_url = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
+        return _normalize_repository_url(f"{github_server_url}/{github_repository}")
+
+    configured_url = ANNOTATION_CONFIG.get("repository_url")
+    if configured_url:
+        return _normalize_repository_url(configured_url)
+
+    remote_url = _run_git_command(["remote", "get-url", "origin"])
+    if remote_url:
+        return _normalize_repository_url(remote_url)
+
+    if benchmark_name:
+        return _normalize_repository_url(
+            f"{ANNOTATION_CONFIG['benchmark_base_url']}/{benchmark_name}"
+        )
+
+    return None
+
+
+def get_current_code_repository_url(benchmark_name: str | None = None) -> str | None:
+    """Return the GitHub URL for the current branch or checked-out commit."""
+    code_repository_url = os.environ.get("CODE_REPOSITORY_URL")
+    if code_repository_url:
+        return code_repository_url
+
+    repository_url = get_repository_url(benchmark_name)
+    branch_name = get_current_branch_name()
+    if repository_url and branch_name:
+        return f"{repository_url}/tree/{branch_name}"
+
+    return None
+
+
 def build_benchmark_ro_uuids_query(benchmark_name: str) -> str:
     """Build a query for research objects annotated with a benchmark IRI."""
     return f"""
@@ -290,7 +387,6 @@ def build_annotated_ro_uuids_query(
 
 def query_sparql(query: str):
     """Run a SPARQL query against the configured RoHub endpoint."""
-    print(query)
     return rohub.query_sparql_endpoint(
         query,
         endpoint_url=rohub.settings.SPARQL_ENDPOINT,
@@ -414,9 +510,12 @@ def fetch_benchmark_data(
     use_production_rohub: bool = False,
 ) -> pd.DataFrame:
     """Authenticate with RoHub and fetch benchmark parameter/metric data."""
-    main_branch_url = ANNOTATION_CONFIG.get("main_branch_url")
-    if main_branch_url:
-        uuids = find_annotated_ro_uuids(benchmark_name, code_repository_url=main_branch_url)
+    code_repository_url = get_current_code_repository_url(benchmark_name)
+    if code_repository_url:
+        uuids = find_annotated_ro_uuids(
+            benchmark_name,
+            code_repository_url=code_repository_url,
+        )
     else:
         uuids = find_benchmark_ro_uuids(benchmark_name)
     named_graphs = find_named_graphs_for_uuids(
@@ -571,6 +670,9 @@ def upload_provenance_rocrate(
 ) -> str:
     """Upload a provenance RO-Crate to RoHub and add semantic annotations."""
     _ = rocrate_title
+    code_repository_url = code_repository_url or get_current_code_repository_url(
+        benchmark_name
+    )
 
     login_to_rohub(
         username=username,
