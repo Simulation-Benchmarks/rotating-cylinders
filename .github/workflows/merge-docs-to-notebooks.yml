@@ -3,7 +3,7 @@ name: Merge docs and script into notebook
 on:
   push:
     branches:
-      - adding_rocrate
+      - main
   workflow_dispatch:
 
 permissions:
