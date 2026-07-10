@@ -15,9 +15,7 @@ on:
 
 env:
   BENCHMARK_NAME: rotating-cylinders
-  BENCHMARK_ROHUB_IDENTIFIER: b6098239-ec68-41d0-87e6-992b2e4bf406
-  EXAMPLE_BENCHMARK_FILE: downloaded-benchmark/benchmark.json
-  EXAMPLE_BENCHMARK_DIR: downloaded-benchmark
+  EXAMPLE_BENCHMARK_FILE: benchmark/1.0.0/benchmark-minimal-configurations.json
   TOOL: dumux
   ROCRATE_LICENSE: https://opensource.org/licenses/MIT
   ROCRATE_NAME: rotating-cylinders provenance (DuMux)
@@ -58,18 +56,6 @@ jobs:
         uses: eWaterCycle/setup-apptainer@v2
         with:
           apptainer-version: 1.4.5
-
-      - name: Download benchmark resources from RoHub
-        shell: bash -l {0}
-        run: |
-          mkdir -p "${GITHUB_WORKSPACE}/${EXAMPLE_BENCHMARK_DIR}"
-
-          python provenance/download_benchmark.py \
-            --identifier "${BENCHMARK_ROHUB_IDENTIFIER}" \
-            --username "${{ secrets.ROHUB_PROD_USERNAME }}" \
-            --password "${{ secrets.ROHUB_PROD_PASSWORD }}" \
-            --semantic-resource-filename "${GITHUB_WORKSPACE}/${EXAMPLE_BENCHMARK_FILE}" \
-            --use-production-rohub true
 
       - name: Run ${{ env.BENCHMARK_NAME }} using ${{ env.TOOL }}
         shell: bash -l {0}
