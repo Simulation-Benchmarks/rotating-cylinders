@@ -13,4 +13,4 @@ dependencies:
   - pandas
   - pip
   - pip:
-      - "semantic-benchmark[rohub] @ git+https://github.com/Simulation-Benchmarks/semantic-benchmark.git"
+      - semantic-benchmark

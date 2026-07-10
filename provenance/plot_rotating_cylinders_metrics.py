@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from plot_metrics import load_and_query_rohub, parse_args
-from utils import parse_bool
 
 LOG_FORMAT = "%(levelname)s:%(name)s:%(message)s"
 LOGGER = logging.getLogger(__name__)
@@ -39,9 +38,9 @@ def parse_workflow_args(argv=None):
     )
     parser.add_argument(
         "--use-production-rohub",
-        type=parse_bool,
+        action="store_true",
         default=False,
-        help="Use production RoHub instead of the development instance (true/false).",
+        help="Use production RoHub instead of the development instance.",
     )
     parser.add_argument(
         "--code-repository-url",
@@ -54,30 +53,29 @@ def parse_workflow_args(argv=None):
 
 def build_plot_args(args):
     """Build the full argument namespace used by the shared RoHub query helper."""
-    return parse_args(
-        [
-            "--benchmark-name",
-            BENCHMARK_NAME,
-            "--parameters",
-            *PARAMETERS,
-            "--metrics",
-            *METRICS,
-            "--tool",
-            args.tool,
-            "--x-axis-label",
-            X_AXIS_LABEL,
-            "--y-axis-label",
-            Y_AXIS_LABEL,
-            "--plot-title",
-            f"{PLOT_TITLE} ({args.tool})",
-            "--output-file",
-            args.output_file or OUTPUT_FILE_TEMPLATE.format(tool=args.tool),
-            "--use-production-rohub",
-            str(args.use_production_rohub).lower(),
-            "--log-y",
-            "true",
-        ]
-    )
+    argv = [
+        "--benchmark-name",
+        BENCHMARK_NAME,
+        "--parameters",
+        *PARAMETERS,
+        "--metrics",
+        *METRICS,
+        "--tool",
+        args.tool,
+        "--x-axis-label",
+        X_AXIS_LABEL,
+        "--y-axis-label",
+        Y_AXIS_LABEL,
+        "--plot-title",
+        f"{PLOT_TITLE} ({args.tool})",
+        "--output-file",
+        args.output_file or OUTPUT_FILE_TEMPLATE.format(tool=args.tool),
+        "--log-y",
+        "true",
+    ]
+
+    if args.use_production_rohub:
+        argv.append("--use-production-rohub")
 
     if args.code_repository_url:
         argv.extend(["--code-repository-url", args.code_repository_url])
