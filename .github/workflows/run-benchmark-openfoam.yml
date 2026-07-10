@@ -16,7 +16,7 @@ on:
 env:
   BENCHMARK_NAME: rotating-cylinders
   BENCHMARK_VERSION: 1.0.0
-  EXAMPLE_BENCHMARK_FILE: benchmark/1.0.0/benchmark-minimal-configurations.json
+  EXAMPLE_BENCHMARK_FILE: benchmark/1.0.0/minimal-configurations.json
   BRANCH_NAME: ${{ inputs.checkout_ref || github.head_ref || github.ref_name }}
   TOOL: openfoam
   ROCRATE_LICENSE: https://opensource.org/licenses/MIT
