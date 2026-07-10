@@ -1,135 +1,121 @@
-name: Rotating Cylinders CI
+name: RoHub Upload CI
+
 on:
-  push:
-
-  pull_request:
-    branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to run and publish
+        required: true
+        default: main
+      use_production_rohub:
+        description: Upload to production RoHub
+        required: true
+        type: boolean
+        default: true
 
-  # Runs the workflow once per day at 3:15am
-  schedule:
-    - cron: '0 18 * * *'
+permissions:
+  contents: read
 
 env:
   BENCHMARK_NAME: rotating-cylinders
-  BENCHMARK_ROHUB_IDENTIFIER: b6098239-ec68-41d0-87e6-992b2e4bf406
   BENCHMARK_VERSION: 1.0.0
-  EXAMPLE_BENCHMARK_FILE: downloaded-benchmark/benchmark.json
-  EXAMPLE_BENCHMARK_DIR: downloaded-benchmark
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  BRANCH_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  CODE_REPOSITORY_URL: https://github.com/${{ github.repository }}/tree/${{ github.head_ref || github.ref_name }}
-  USE_PRODUCTION_ROHUB: true
+  BRANCH_NAME: ${{ inputs.branch || github.ref_name }}
+  CODE_REPOSITORY_URL: https://github.com/${{ github.repository }}/tree/${{ inputs.branch || github.ref_name }}
+  USE_PRODUCTION_ROHUB: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.use_production_rohub) || 'true' }}
 
 jobs:
-  run-examples:
+  run-dumux:
+    uses: ./.github/workflows/run-benchmark-dumux.yml
+    with:
+      checkout_ref: ${{ inputs.branch || github.ref_name }}
+    secrets: inherit
+
+  run-openfoam:
+    uses: ./.github/workflows/run-benchmark-openfoam.yml
+    with:
+      checkout_ref: ${{ inputs.branch || github.ref_name }}
+    secrets: inherit
+
+  upload-rocrates:
     runs-on: ubuntu-latest
+    needs:
+      - run-dumux
+      - run-openfoam
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include:
           - tool: dumux
+            display_name: DuMux
             used_software_url: https://zbmath.org/software/14293
           - tool: openfoam
+            display_name: OpenFOAM
             used_software_url: https://zbmath.org/software/4317
 
     steps:
-      - name: checkout repo content
-        uses: actions/checkout@v4
-
-      - name: Setup Mambaforge
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Checkout repo content
+        uses: actions/checkout@v6
         with:
-          miniforge-version: latest
-          activate-environment: rotating-cylinders-model-validation
-          use-mamba: true
-          conda-remove-defaults: true
+          ref: ${{ inputs.branch || github.ref_name }}
 
-      - name: Set strict channel priority
-        run: conda config --set channel_priority strict
+      - name: Capture branch commit SHA
+        shell: bash
+        run: echo "BRANCH_COMMIT_SHA=$(git rev-parse HEAD)" >> "${GITHUB_ENV}"
 
-      - name: Setup Apptainer
-        uses: eWaterCycle/setup-apptainer@v2
-        with:
-          apptainer-version: 1.4.5
-
-      - name: Update environment
-        run: mamba env update -n rotating-cylinders-model-validation -f $GITHUB_WORKSPACE/environment_benchmarks.yml
-
-      - name: Install RoHub package
-        shell: bash -l {0}
-        run: python -m pip install rohub
-      
-      - name: Download benchmark resources from RoHub
-        shell: bash -l {0}
-        run: |
-          mkdir -p "${GITHUB_WORKSPACE}/downloaded-benchmark"
-
-          python "${GITHUB_WORKSPACE}/provenance/download_benchmark.py" \
-            --identifier "${BENCHMARK_ROHUB_IDENTIFIER}" \
-            --username "${{ secrets.ROHUB_PROD_USERNAME }}" \
-            --password "${{ secrets.ROHUB_PROD_PASSWORD }}" \
-            --semantic-resource-filename "${GITHUB_WORKSPACE}/${EXAMPLE_BENCHMARK_FILE}" \
-            --use-production-rohub True
-      
-      - name: Run ${{ env.BENCHMARK_NAME }} benchmark using ${{ matrix.tool }} and validate convergence
-        shell: bash -l {0}
-        run: |
-          cd "$GITHUB_WORKSPACE/${{ matrix.tool }}/"
-          python3 run_benchmark.py \
-            --benchmark-file "${GITHUB_WORKSPACE}/${EXAMPLE_BENCHMARK_FILE}" \
-            --rocrate-name "${{ matrix.tool }}_rocrate.zip" \
-            --result-path "${GITHUB_WORKSPACE}/${{ matrix.tool }}/results" 
-
-      - name: Archive ${{ matrix.tool }} results
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.tool }}_results_${{ env.BENCHMARK_NAME }}
-          path: |
-            ${{ matrix.tool }}/results/
-
-      - name: Archive ${{ matrix.tool }} aggregate RO-Crate artifact
-        uses: actions/upload-artifact@v4
+      - name: Download ${{ matrix.display_name }} aggregate RO-Crate artifact
+        uses: actions/download-artifact@v6
         with:
           name: ${{ matrix.tool }}-aggregate-rocrate
-          path: ${{ github.workspace }}/${{ matrix.tool }}/results/${{ matrix.tool }}_rocrate.zip
+          path: artifacts/${{ matrix.tool }}
 
-      - name: Upload ${{ matrix.tool }} RO-Crate Zip file onto RoHub
-        id: rohub_upload
+      - name: Setup Mambaforge with provenance env
+        uses: conda-incubator/setup-miniconda@v4
+        with:
+          miniforge-version: latest
+          activate-environment: provenance
+          use-mamba: true
+          environment-file: provenance/environment_provenance.yml
+          conda-remove-defaults: "true"
+
+      - name: Select RoHub credentials
+        shell: bash
+        run: |
+          if [ "${USE_PRODUCTION_ROHUB}" = "true" ]; then
+            echo "ROHUB_USERNAME=${{ secrets.ROHUB_PROD_USERNAME }}" >> "${GITHUB_ENV}"
+            echo "ROHUB_PASSWORD=${{ secrets.ROHUB_PROD_PASSWORD }}" >> "${GITHUB_ENV}"
+          else
+            echo "ROHUB_USERNAME=${{ secrets.ROHUB_DEV_USERNAME }}" >> "${GITHUB_ENV}"
+            echo "ROHUB_PASSWORD=${{ secrets.ROHUB_DEV_PASSWORD }}" >> "${GITHUB_ENV}"
+          fi
+
+      - name: Upload ${{ matrix.display_name }} RO-Crate zip file onto RoHub
         shell: bash -l {0}
         continue-on-error: true
+        env:
+          TOOL: ${{ matrix.tool }}
+          TOOL_DISPLAY_NAME: ${{ matrix.display_name }}
+          USED_SOFTWARE_URL: ${{ matrix.used_software_url }}
         run: |
-          TOOL="${{ matrix.tool }}"
-          TOOL_NAME="${TOOL^}"
-          ROCRATE_TITLE="Rotating Cylinders Provenance (${TOOL_NAME}) ${BENCHMARK_VERSION}"
-
-          if [ "${USE_PRODUCTION_ROHUB}" = "true" ]; then
-            ROHUB_USERNAME="${{ secrets.ROHUB_PROD_USERNAME }}"
-            ROHUB_PASSWORD="${{ secrets.ROHUB_PROD_PASSWORD }}"
-          else
-            ROHUB_USERNAME="${{ secrets.ROHUB_DEV_USERNAME }}"
-            ROHUB_PASSWORD="${{ secrets.ROHUB_DEV_PASSWORD }}"
-          fi
+          ROCRATE_TITLE="rotating-cylinders Provenance (${TOOL_DISPLAY_NAME}) ${BENCHMARK_VERSION}"
 
           if [ "${BRANCH_NAME}" != "main" ]; then
             ROCRATE_TITLE="${ROCRATE_TITLE}_${BRANCH_COMMIT_SHA:0:7}"
           fi
 
-          python "${GITHUB_WORKSPACE}/provenance/upload_provenance.py" \
-            --provenance_folderpath "${GITHUB_WORKSPACE}/${TOOL}/results/${TOOL}_rocrate.zip" \
+          python provenance/upload_provenance.py \
+            --provenance_folderpath "${GITHUB_WORKSPACE}/artifacts/${TOOL}/${TOOL}_rocrate.zip" \
             --benchmark-name "${BENCHMARK_NAME}" \
             --username "${ROHUB_USERNAME}" \
             --password "${ROHUB_PASSWORD}" \
             --rocrate-title "${ROCRATE_TITLE}" \
             --code-repository-url "${CODE_REPOSITORY_URL}" \
-            --used-software-url "${{ matrix.used_software_url }}" \
+            --used-software-url "${USED_SOFTWARE_URL}" \
             --use-production-rohub "${USE_PRODUCTION_ROHUB}"
 
   wait-for-rohub-processing:
     runs-on: ubuntu-latest
-    needs: run-examples
+    needs: upload-rocrates
     steps:
       - name: Wait for RoHub processing
         run: sleep 600
@@ -138,36 +124,45 @@ jobs:
     runs-on: ubuntu-latest
     needs: wait-for-rohub-processing
     env:
-      PLOT_OUTPUT_FILE: ${{ matrix.tool }}-convergence-plot.png
+      USE_PRODUCTION_ROHUB: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.use_production_rohub) || 'true' }}
 
     strategy:
       fail-fast: false
       matrix:
-        tool: [dumux, openfoam]
+        include:
+          - tool: dumux
+            output_file: dumux-convergence-plot.png
+          - tool: openfoam
+            output_file: openfoam-convergence-plot.png
 
     steps:
       - name: Checkout repo content
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
 
       - name: Setup Mambaforge with provenance env
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           miniforge-version: latest
-          activate-environment: rotating-cylinders-provenance
+          activate-environment: provenance
           use-mamba: true
           environment-file: provenance/environment_provenance.yml
-          conda-remove-defaults: true
+          conda-remove-defaults: "true"
 
       - name: Run ${{ matrix.tool }} plotting script
         shell: bash -l {0}
+        continue-on-error: true
         run: |
           python provenance/plot_rotating_cylinders_metrics.py \
             --tool "${{ matrix.tool }}" \
-            --output-file "${PLOT_OUTPUT_FILE}" \
+            --output-file "${{ matrix.output_file }}" \
+            --code-repository-url "${CODE_REPOSITORY_URL}" \
             --use-production-rohub "${USE_PRODUCTION_ROHUB}"
 
       - name: Upload ${{ matrix.tool }} plot artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.tool }}-plot
-          path: ${{ env.PLOT_OUTPUT_FILE }}
+          path: ${{ matrix.output_file }}
+          if-no-files-found: ignore

@@ -43,6 +43,12 @@ def parse_workflow_args(argv=None):
         default=False,
         help="Use production RoHub instead of the development instance (true/false).",
     )
+    parser.add_argument(
+        "--code-repository-url",
+        type=str,
+        default=None,
+        help="Optional Git branch URL used to filter RoHub results.",
+    )
     return parser.parse_args(argv)
 
 
@@ -72,6 +78,11 @@ def build_plot_args(args):
             "true",
         ]
     )
+
+    if args.code_repository_url:
+        argv.extend(["--code-repository-url", args.code_repository_url])
+
+    return parse_args(argv)
 
 
 def prepare_convergence_data(

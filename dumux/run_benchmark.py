@@ -5,24 +5,16 @@ import json
 import logging
 import shutil
 import subprocess
-import sys
-import zipfile
 from argparse import Namespace
 from pathlib import Path
 
-from rocrate_validator import models, services
-
-REPO_ROOT = Path(__file__).resolve().parent.parent
-PROVENANCE_DIR = REPO_ROOT / "provenance"
-if str(PROVENANCE_DIR) not in sys.path:
-    sys.path.insert(0, str(PROVENANCE_DIR))
-
-import create_rocrate
-import semantic_benchmark
+from semantic_benchmark.semantics import BenchmarkLoader, SemanticBenchmark, TextParameter
+import semantic_benchmark.rocrate as rocrate
 
 LOG_FORMAT = "%(levelname)s:%(name)s:%(message)s"
 LOGGER = logging.getLogger(__name__)
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
 TOOL_NAME = "dumux"
 BENCHMARK_DIR = Path(__file__).resolve().parent
 
@@ -31,6 +23,9 @@ PROVENANCE_REPORT_NAME = "Rotating Cylinders Provenance"
 PROVENANCE_REPORT_DESCRIPTION = "Benchmark for rotating cylinders"
 PROVENANCE_REPORT_LICENSE = "https://opensource.org/licenses/MIT"
 PROVENANCE_PROFILE = "provenance-run-crate-0.5"
+DEFAULT_CRATE_LICENSE = "https://opensource.org/licenses/MIT"
+DEFAULT_CRATE_NAME = f"NFDI4Ing Provenance ({TOOL_NAME})"
+DEFAULT_CRATE_DESCRIPTION = "Benchmark for rotating cylinders"
 
 UNIT_SYMBOLS = {
     "unit:M": "m",
@@ -81,9 +76,19 @@ def parse_arguments() -> Namespace:
         help="Filename or path for the generated aggregate RO-Crate zip file.",
     )
     parser.add_argument(
-        "--software-name",
-        default=TOOL_NAME,
-        help="Software name recorded in the generated aggregate RO-Crate.",
+        "--crate-license",
+        default=DEFAULT_CRATE_LICENSE,
+        help="License URL recorded in the generated aggregate RO-Crate.",
+    )
+    parser.add_argument(
+        "--crate-name",
+        default=DEFAULT_CRATE_NAME,
+        help="Name recorded in the generated aggregate RO-Crate.",
+    )
+    parser.add_argument(
+        "--crate-description",
+        default=DEFAULT_CRATE_DESCRIPTION,
+        help="Description recorded in the generated aggregate RO-Crate.",
     )
     return parser.parse_args()
 
@@ -98,18 +103,18 @@ def parameter_json_key(parameter) -> str:
 
 def parameter_json_value(parameter):
     """Extract the scalar value stored in a benchmark parameter object."""
-    if isinstance(parameter, semantic_benchmark.TextParameter):
+    if isinstance(parameter, TextParameter):
         return parameter.string_value
     return getattr(parameter, "numerical_value", None)
 
 
-def load_benchmark(benchmark_file: Path) -> semantic_benchmark.SemanticBenchmark:
+def load_benchmark(benchmark_file: Path) -> SemanticBenchmark:
     """Load the semantic benchmark description from a JSON-LD file."""
-    return semantic_benchmark.BenchmarkLoader(benchmark_file).load()
+    return BenchmarkLoader(benchmark_file).load()
 
 
 def create_parameter_files_from_benchmark(
-    benchmark: semantic_benchmark.SemanticBenchmark,
+    benchmark: SemanticBenchmark,
     output_dir: Path,
 ) -> None:
     """Create parameters_*.json files from the benchmark configuration objects."""
@@ -235,40 +240,25 @@ def run_configuration(
 
 def create_aggregate_rocrate(
     results_dir: Path,
-    benchmark: semantic_benchmark.SemanticBenchmark,
+    benchmark: SemanticBenchmark,
     rocrate_path: Path,
-    software_name: str,
+    crate_license: str,
+    crate_name: str,
+    crate_description: str,
 ) -> None:
     """Create one aggregate RO-Crate from all per-configuration result crates."""
-    
-    LOGGER.info("results_dir: %s", results_dir)
-    LOGGER.info("results_dir resolved: %s", Path(results_dir).resolve())
-    LOGGER.info("rocrate_path: %s", rocrate_path)
-    LOGGER.info("software_name: %s", software_name)
-
-    create_rocrate.create_main_ro(
-        str(results_dir),
-        benchmark,
+    rocrate.create_main_ro(
+        path=str(results_dir),
+        benchmark_object=benchmark,
         rocrate_path=str(rocrate_path),
-        software_name=software_name,
+        software_name=TOOL_NAME,
+        crate_license=crate_license,
+        crate_name=crate_name,
+        crate_description=crate_description,
+        validation_profile=PROVENANCE_PROFILE,
+        validation_dir=results_dir / "unpacked_rocrate",
     )
     LOGGER.info("Aggregate RO-Crate created at %s.", rocrate_path)
-
-
-def validate_rocrate(rocrate_path: str, profile: str = PROVENANCE_PROFILE) -> None:
-    """Validate the RO-Crate folder against the specified profile."""
-    settings = services.ValidationSettings(
-        rocrate_uri=rocrate_path,
-        profile_identifier=profile,
-        requirement_severity=models.Severity.REQUIRED,
-    )
-    result = services.validate(settings)
-    assert not result.has_issues(), "RO-Crate is invalid!\n" + "\n".join(
-        f"Detected issue of severity {issue.severity.name} with check "
-        f'"{issue.check.identifier}": {issue.message}'
-        for issue in result.get_issues()
-    )
-    LOGGER.info("RO-Crate is valid.")
 
 
 def run_benchmark(args: Namespace) -> None:
@@ -285,15 +275,9 @@ def run_benchmark(args: Namespace) -> None:
         args.result_path,
         benchmark,
         rocrate_path=args.result_path / args.rocrate_name,
-        software_name=args.software_name,
-    )
-
-    with zipfile.ZipFile(args.result_path / args.rocrate_name, "r") as zip_ref:
-        zip_ref.extractall(args.result_path / "unpacked_rocrate")
-
-    validate_rocrate(
-        rocrate_path=str(args.result_path / "unpacked_rocrate"),
-        profile=PROVENANCE_PROFILE,
+        crate_license=args.crate_license,
+        crate_name=args.crate_name,
+        crate_description=args.crate_description,
     )
 
 
