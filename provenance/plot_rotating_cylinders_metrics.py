@@ -70,8 +70,7 @@ def build_plot_args(args):
         f"{PLOT_TITLE} ({args.tool})",
         "--output-file",
         args.output_file or OUTPUT_FILE_TEMPLATE.format(tool=args.tool),
-        "--log-y",
-        "true",
+        "--log-y"
     ]
 
     if args.use_production_rohub:
