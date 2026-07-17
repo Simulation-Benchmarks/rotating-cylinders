@@ -59,12 +59,6 @@ def parse_arguments() -> Namespace:
         help="Path to the semantic benchmark JSON-LD file.",
     )
     parser.add_argument(
-        "--benchmark-zip",
-        type=Path,
-        required=False,
-        help="Path to the zipped benchmark archive to extract.",
-    )
-    parser.add_argument(
         "--result-path",
         type=Path,
         required=True,
@@ -205,7 +199,7 @@ def build_provenance_reporter_args(configuration: str) -> list[str]:
         f"--report-{PROVENANCE_REPORTER_NAME}-run-license",
         PROVENANCE_REPORT_LICENSE,
         f"--report-{PROVENANCE_REPORTER_NAME}-main-tool",
-        "fenics-dolfinx",
+        "OpenFOAM",
         f"--report-{PROVENANCE_REPORTER_NAME}-organization-ror",
         "https://ror.org/04vnq7t77",
         f"--report-{PROVENANCE_REPORTER_NAME}-organization-name",
