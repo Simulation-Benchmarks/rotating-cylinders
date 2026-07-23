@@ -1,4 +1,4 @@
-name: RoHub Upload CI
+name: RoHub Integration CI
 
 on:
   schedule:
@@ -22,11 +22,8 @@ permissions:
 env:
   BENCHMARK_NAME: rotating-cylinders
   BENCHMARK_ROHUB_IDENTIFIER: b6098239-ec68-41d0-87e6-992b2e4bf406
-  BENCHMARK_VERSION: 1.0.0
   BENCHMARK_ARTIFACT_NAME: downloaded-benchmark-resources
   BENCHMARK_FILE: downloaded-benchmark/benchmark.json
-  BENCHMARK_ZIP: downloaded-benchmark/rotating-cylinders.zip
-  BRANCH_NAME: ${{ inputs.branch || github.ref_name }}
   CODE_REPOSITORY_URL: https://github.com/${{ github.repository }}/tree/${{ inputs.branch || github.ref_name }}
   USE_PRODUCTION_ROHUB: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.use_production_rohub) || 'true' }}
 
@@ -57,7 +54,17 @@ jobs:
         shell: bash
         run: |
           mkdir -p "${GITHUB_WORKSPACE}/downloaded-benchmark"
-          python -c 'import os; from semantic_benchmark.rohub import download_benchmark_resources; download_benchmark_resources(identifier=os.environ["BENCHMARK_ROHUB_IDENTIFIER"], username=os.environ["ROHUB_USERNAME"], password=os.environ["ROHUB_PASSWORD"], zip_resource_filename=os.path.join(os.environ["GITHUB_WORKSPACE"], os.environ["BENCHMARK_ZIP"]), semantic_resource_filename=os.path.join(os.environ["GITHUB_WORKSPACE"], os.environ["BENCHMARK_FILE"]), use_production_rohub=os.environ["USE_PRODUCTION_ROHUB"].lower() == "true")'
+          rohub_args=()
+          if [ "${USE_PRODUCTION_ROHUB}" = "true" ]; then
+            rohub_args=(--use-production-rohub)
+          fi
+
+          python provenance/download_benchmark.py \
+            --identifier "${BENCHMARK_ROHUB_IDENTIFIER}" \
+            --username "${ROHUB_USERNAME}" \
+            --password "${ROHUB_PASSWORD}" \
+            --semantic-resource-filename "${GITHUB_WORKSPACE}/${BENCHMARK_FILE}" \
+            "${rohub_args[@]}"
 
       - name: Archive downloaded benchmark resources
         uses: actions/upload-artifact@v7
