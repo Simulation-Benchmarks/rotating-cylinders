@@ -40,6 +40,7 @@ env:
 
 jobs:
   run-examples:
+    name: DuMux
     runs-on: ubuntu-latest
 
     steps:
