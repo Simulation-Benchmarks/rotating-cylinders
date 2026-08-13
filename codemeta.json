@@ -3,7 +3,7 @@
   "@type": "SoftwareSourceCode",
   "identifier": [
     "rotating-cylinders",
-    "https://doi.org/10.5281/zenodo.TODO"
+    "https://doi.org/10.5281/zenodo.21922264"
   ],
   "name": "rotating-cylinders",
   "description": "A multi-solver benchmark for the Navier-Stokes flow between two concentric rotating cylinders (Taylor-Couette flow), with reference implementations for DuMux and OpenFOAM, plus FAIR4RS-compliant metadata and REUSE licensing.",
@@ -13,7 +13,7 @@
   "license": "https://spdx.org/licenses/MIT",
   "codeRepository": "https://github.com/Simulation-Benchmarks/rotating-cylinders",
   "url": "https://github.com/Simulation-Benchmarks/rotating-cylinders",
-  "downloadUrl": "https://zenodo.org/records/TODO",
+  "downloadUrl": "https://zenodo.org/records/21922264",
   "releaseNotes": "https://github.com/Simulation-Benchmarks/rotating-cylinders/blob/main/CHANGELOG.md#010---2026-08-13",
   "issueTracker": "https://github.com/Simulation-Benchmarks/rotating-cylinders/issues",
   "programmingLanguage": [

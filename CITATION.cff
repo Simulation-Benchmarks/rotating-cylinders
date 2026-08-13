@@ -44,10 +44,10 @@ identifiers:
     value: "https://github.com/Simulation-Benchmarks/rotating-cylinders"
     description: "The GitHub repository URL."
   - type: doi
-    value: "10.5281/zenodo.TODO"
+    value: "10.5281/zenodo.21922264"
     description: "Concept DOI for all versions of rotating-cylinders (Zenodo)."
   - type: doi
-    value: "10.5281/zenodo.TODO"
+    value: "10.5281/zenodo.21922264"
     description: "Version DOI for v0.1.0 (Zenodo)."
 references:
   - type: software
