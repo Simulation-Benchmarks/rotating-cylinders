@@ -14,7 +14,7 @@ Metrics reported for each run:
 - **Relative L2 pressure error** against the analytical Couette-flow solution
 - **Relative L2 velocity error** against the analytical Couette-flow solution
 
-See [docs/rotating-cylinders.md](docs/rotating-cylinders.md) for the full
+See [documentation](docs/benchmark-documentation.md) for the full
 mathematical formulation.
 
 ## Simulation Tools
@@ -46,7 +46,7 @@ RoHub and plots the two convergence metrics against the number of radial cells.
 Click the badge to open the pre-built notebook on Binder and explore the
 provenance plots interactively:
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Simulation-Benchmarks/rotating-cylinders/main?labpath=notebooks%2Frotating_cylinders.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Simulation-Benchmarks/rotating-cylinders/main?labpath=notebooks%2Fbenchmark-results.ipynb)
 
 ## Acknowledgments
 
