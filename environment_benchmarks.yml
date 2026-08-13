@@ -1,0 +1,11 @@
+name: rotating-cylinders-model-validation
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - snakemake
+  - rdflib
+  - pip
+  - pip:
+      - semantic-benchmark
+      - "git+https://github.com/izus-fokus/snakemake-report-plugin-metadata4ing@v2.0.2#egg=snakemake-report-plugin-metadata4ing"
