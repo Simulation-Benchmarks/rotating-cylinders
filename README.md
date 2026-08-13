@@ -43,6 +43,11 @@ command-line entrypoints for this rotating-cylinders benchmark.
 The provenance notebook under `notebooks/RoCrate.ipynb` fetches run data from
 RoHub and plots the two convergence metrics against the number of radial cells.
 
+Click the badge to open the pre-built notebook on Binder and explore the
+provenance plots interactively:
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Simulation-Benchmarks/rotating-cylinders/main?labpath=notebooks%2Frotating_cylinders.ipynb)
+
 ## Acknowledgments
 
 This benchmark was originally developed as part of the
