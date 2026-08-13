@@ -1,0 +1,99 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "identifier": [
+    "rotating-cylinders",
+    "https://doi.org/10.5281/zenodo.TODO"
+  ],
+  "name": "rotating-cylinders",
+  "description": "A multi-solver benchmark for the Navier-Stokes flow between two concentric rotating cylinders (Taylor-Couette flow), with reference implementations for DuMux and OpenFOAM, plus FAIR4RS-compliant metadata and REUSE licensing.",
+  "version": "0.1.0",
+  "dateCreated": "2026-08-13",
+  "datePublished": "2026-08-13",
+  "license": "https://spdx.org/licenses/MIT",
+  "codeRepository": "https://github.com/Simulation-Benchmarks/rotating-cylinders",
+  "url": "https://github.com/Simulation-Benchmarks/rotating-cylinders",
+  "downloadUrl": "https://zenodo.org/records/TODO",
+  "releaseNotes": "https://github.com/Simulation-Benchmarks/rotating-cylinders/blob/main/CHANGELOG.md#010---2026-08-13",
+  "issueTracker": "https://github.com/Simulation-Benchmarks/rotating-cylinders/issues",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "Python",
+      "version": ">=3.10"
+    }
+  ],
+  "runtimePlatform": "Python 3",
+  "operatingSystem": ["Linux"],
+  "developmentStatus": "active",
+  "applicationCategory": "Scientific/Engineering",
+  "keywords": [
+    "benchmark",
+    "computational fluid dynamics",
+    "Taylor-Couette flow",
+    "rotating cylinders",
+    "NFDI4ING",
+    "model validation",
+    "FAIR4RS",
+    "REUSE"
+  ],
+  "author": [
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0000-0002-7121-6816",
+      "givenName": "Vasiliy",
+      "familyName": "Seibert",
+      "affiliation": {
+        "@type": "Organization",
+        "@id": "https://ror.org/04qb8nc58",
+        "name": "TU Clausthal"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0000-0001-8188-620X",
+      "givenName": "Bernd",
+      "familyName": "Flemisch",
+      "affiliation": {
+        "@type": "Organization",
+        "@id": "https://ror.org/04vnq7t77",
+        "name": "University of Stuttgart"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0009-0008-6162-8404",
+      "givenName": "Mahdi",
+      "familyName": "Jafarkhani",
+      "affiliation": {
+        "@type": "Organization",
+        "@id": "https://ror.org/04vnq7t77",
+        "name": "University of Stuttgart"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0000-0002-5990-0076",
+      "givenName": "Sarbani",
+      "familyName": "Roy",
+      "affiliation": {
+        "@type": "Organization",
+        "@id": "https://ror.org/04vnq7t77",
+        "name": "University of Stuttgart"
+      }
+    }
+  ],
+  "maintainer": [
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0000-0001-8188-620X",
+      "givenName": "Bernd",
+      "familyName": "Flemisch"
+    }
+  ],
+  "readme": "https://github.com/Simulation-Benchmarks/rotating-cylinders/blob/main/README.md",
+  "funder": {
+    "@type": "Organization",
+    "name": "NFDI4ING"
+  }
+}

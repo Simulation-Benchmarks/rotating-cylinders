@@ -1,0 +1,64 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: "rotating-cylinders: a multi-solver benchmark for Taylor-Couette flow"
+abstract: >-
+  A benchmark repository for the Navier-Stokes flow between two concentric
+  rotating cylinders (Taylor-Couette flow). It provides reference
+  implementations and simulation workflows for two CFD solvers (DuMux,
+  OpenFOAM) together with problem documentation, postprocessing scripts,
+  and RO-Crate-compatible benchmark packaging.
+type: software
+authors:
+  - family-names: Seibert
+    given-names: Vasiliy
+    orcid: "https://orcid.org/0000-0002-7121-6816"
+    affiliation: "TU Clausthal"
+  - family-names: Flemisch
+    given-names: Bernd
+    orcid: "https://orcid.org/0000-0001-8188-620X"
+    affiliation: "University of Stuttgart"
+  - family-names: Jafarkhani
+    given-names: Mahdi
+    orcid: "https://orcid.org/0009-0008-6162-8404"
+    affiliation: "University of Stuttgart"
+  - family-names: Roy
+    given-names: Sarbani
+    orcid: "https://orcid.org/0000-0002-5990-0076"
+    affiliation: "University of Stuttgart"
+version: "0.1.0"
+date-released: "2026-08-13"
+license: MIT
+repository-code: "https://github.com/Simulation-Benchmarks/rotating-cylinders"
+url: "https://github.com/Simulation-Benchmarks/rotating-cylinders"
+keywords:
+  - benchmark
+  - computational fluid dynamics
+  - Taylor-Couette flow
+  - rotating cylinders
+  - NFDI4ING
+  - model validation
+  - FAIR4RS
+  - REUSE
+identifiers:
+  - type: url
+    value: "https://github.com/Simulation-Benchmarks/rotating-cylinders"
+    description: "The GitHub repository URL."
+  - type: doi
+    value: "10.5281/zenodo.TODO"
+    description: "Concept DOI for all versions of rotating-cylinders (Zenodo)."
+  - type: doi
+    value: "10.5281/zenodo.TODO"
+    description: "Version DOI for v0.1.0 (Zenodo)."
+references:
+  - type: software
+    title: "DuMux"
+    url: "https://dumux.org/"
+    notes: "Used for the DuMux implementation."
+  - type: software
+    title: "OpenFOAM"
+    url: "https://www.openfoam.com/"
+    notes: "Used for the OpenFOAM implementation."
+  - type: software
+    title: "Snakemake"
+    url: "https://snakemake.github.io/"
+    notes: "Workflow orchestration."
