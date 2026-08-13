@@ -1,5 +1,8 @@
 # Rotating Cylinders Benchmark
 
+[![REUSE status](https://api.reuse.software/badge/github.com/Simulation-Benchmarks/rotating-cylinders)](https://api.reuse.software/info/github.com/Simulation-Benchmarks/rotating-cylinders)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.TODO.svg)](https://doi.org/10.5281/zenodo.TODO)
+
 A benchmark for the Navier-Stokes flow between two rotating cylinders
 (Taylor-Couette flow).
 
@@ -52,3 +55,17 @@ provenance plots interactively:
 
 This benchmark was originally developed as part of the
 [NFDI4Ing Model Validation Platform](https://github.com/BAMresearch/NFDI4IngModelValidationPlatform).
+
+## License
+
+This repository follows the [REUSE](https://reuse.software/) specification.
+License information is provided per file via [REUSE.toml](./REUSE.toml).
+In short:
+
+- Source code files (`.py`, `Snakefile*`, `.github/workflows/*.yml`, `postBuild`) are licensed under the [MIT License](./LICENSES/MIT.txt).
+- Documentation (`.md`) is licensed under [CC-BY-4.0](./LICENSES/CC-BY-4.0.txt).
+- Data, configuration, and generated artifacts (`.json`, `.yml`, `.toml`, `.ipynb`, `.zip`) are licensed under [CC0-1.0](./LICENSES/CC0-1.0.txt).
+
+## Citation
+
+Please see [`CITATION.cff`](./CITATION.cff) for citation metadata, including the concept DOI and versioned DOIs archived on Zenodo.
