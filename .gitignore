@@ -12,4 +12,4 @@ results/
 __pycache__/
 *.pyc
 # Auto-generated notebook (build artifact, see docs/notebook-pipeline.md)
-notebooks/rotating_cylinders.ipynb
+notebooks/benchmark-results.ipynb
