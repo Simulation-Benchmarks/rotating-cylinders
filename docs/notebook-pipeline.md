@@ -1,36 +1,40 @@
 # Notebook pipeline
 
 The `notebooks/rotating_cylinders.ipynb` notebook in this repository is
-**auto-generated** on every push to `main` (and on manual
-`workflow_dispatch`).
+**auto-generated** by [repo2docker](https://github.com/jupyterhub/repo2docker)'s
+`postBuild` hook, which runs whenever the repository image is built (e.g. on
+launch via Binder or the NFDI JupyterHub).
 
 ## Inputs
 
 - Documentation: `docs/rotating-cylinders.md`
-- Postprocessing script: `dumux/convergence_test.py` (source of truth for
-  the code cells)
+- Source notebook: `notebooks/RoCrate.ipynb` (source of truth for the
+  code cells)
 - Output: `notebooks/rotating_cylinders.ipynb`
 
 ## How it works
 
-The workflow at `.github/workflows/merge-docs-to-notebooks.yml` runs
-`scripts/build_notebook.py`, which:
+The `postBuild` script at the repo root runs `scripts/build_notebook.py`,
+which:
 
 1. Reads the documentation markdown.
-2. Parses the postprocessing script with `ast.parse` and embeds each
-   top-level definition as a code cell. The `if __name__ == "__main__":`
-   guard is stripped so the cell runs end-to-end when the notebook is
-   opened.
-3. Prepends the documentation as a markdown cell (with a Binder badge).
+2. Prepends the documentation as a markdown cell, rewriting any relative
+   image paths so they still resolve from the notebook's directory.
+3. Appends all cells from `notebooks/RoCrate.ipynb` verbatim (cell type
+   preserved, outputs cleared).
 4. Writes the result as a Jupyter notebook to the output path.
 
-The result is committed back to `main` with `[skip ci]`.
+Because this runs as part of the repo2docker build, the notebook is always
+freshly generated for anyone launching the repository interactively — there
+is no CI step and nothing to commit back to `main`.
+
+`notebooks/rotating_cylinders.ipynb` is git-ignored: it is a build artifact,
+not a source file, and only exists once `postBuild` (or a local run of the
+script below) has generated it.
 
 ## Regenerating locally
 
     python scripts/build_notebook.py \
       --doc docs/rotating-cylinders.md \
-      --script dumux/convergence_test.py \
-      --notebook notebooks/rotating_cylinders.ipynb \
-      --repo Simulation-Benchmarks/rotating-cylinders \
-      --branch main
+      --source-notebook notebooks/RoCrate.ipynb \
+      --notebook notebooks/rotating_cylinders.ipynb
