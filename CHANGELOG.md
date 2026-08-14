@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Replaced the Zenodo DOI placeholder with the real DOI (`10.5281/zenodo.21922264`) in `README.md`, `CITATION.cff`, and `codemeta.json`, now that the GitHub–Zenodo integration has archived v0.1.0.
+
 ## [0.1.0] - 2026-08-13
 
 ### Added

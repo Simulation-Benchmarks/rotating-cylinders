@@ -1,7 +1,7 @@
 # Rotating Cylinders Benchmark
 
 [![REUSE status](https://api.reuse.software/badge/github.com/Simulation-Benchmarks/rotating-cylinders)](https://api.reuse.software/info/github.com/Simulation-Benchmarks/rotating-cylinders)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.TODO.svg)](https://doi.org/10.5281/zenodo.TODO)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21922264.svg)](https://doi.org/10.5281/zenodo.21922264)
 
 A benchmark for the Navier-Stokes flow between two rotating cylinders
 (Taylor-Couette flow).
