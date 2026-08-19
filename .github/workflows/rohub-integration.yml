@@ -87,7 +87,6 @@ jobs:
     with:
       checkout_ref: ${{ inputs.branch || github.ref_name }}
       benchmark_file: downloaded-benchmark/benchmark.json
-      benchmark_zip: downloaded-benchmark/rotating-cylinders.zip
       benchmark_artifact_name: downloaded-benchmark-resources
 
   upload-rocrates:
