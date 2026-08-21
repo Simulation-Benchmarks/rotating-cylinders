@@ -3,6 +3,7 @@
 import argparse
 import json
 import logging
+import re
 import shutil
 import subprocess
 from argparse import Namespace
@@ -28,8 +29,8 @@ DEFAULT_CRATE_NAME = f"NFDI4Ing Provenance ({TOOL_NAME})"
 DEFAULT_CRATE_DESCRIPTION = "Benchmark for rotating cylinders"
 
 UNIT_SYMBOLS = {
-    "unit:M": "m",
-    "unit:RAD-PER-SEC": "rad/s",
+    "M": "m",
+    "RAD-PER-SEC": "rad/s",
 }
 
 
@@ -87,12 +88,21 @@ def parse_arguments() -> Namespace:
     return parser.parse_args()
 
 
+def resolve_unit_symbol(unit: str) -> str:
+    fragment = re.split(r"[:/#]", unit)[-1].upper()
+    try:
+        return UNIT_SYMBOLS[fragment]
+    except KeyError:
+        return ""
+        
+        
 def parameter_json_key(parameter) -> str:
     """Build the parameters.json key, including the unit suffix when present."""
-    unit_symbol = UNIT_SYMBOLS.get(parameter.unit)
-    if unit_symbol:
-        return f"{parameter.label}[{unit_symbol}]"
-    return parameter.label
+    if not parameter.unit:
+        return parameter.label
+    
+    unit_symbol = resolve_unit_symbol(parameter.unit)
+    return f"{parameter.label}[{unit_symbol}]" if unit_symbol else parameter.label
 
 
 def parameter_json_value(parameter):
