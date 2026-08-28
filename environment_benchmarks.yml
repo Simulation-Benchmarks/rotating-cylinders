@@ -7,5 +7,5 @@ dependencies:
   - rdflib
   - pip
   - pip:
-      - semantic-benchmark<=0.1.6
+      - semantic-benchmark<=0.1.10
       - "git+https://github.com/izus-fokus/snakemake-report-plugin-metadata4ing@v2.0.2#egg=snakemake-report-plugin-metadata4ing"
