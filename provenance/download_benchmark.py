@@ -1,8 +1,9 @@
 """
 Download benchmark resources from a RoHub research object.
 
-The module authenticates with RoHub, loads a research object by UUID, selects a
-resource by its RoHub type, and downloads it to a filename provided by the user.
+The module authenticates with RoHub, loads a research object by UUID, selects
+the semantic benchmark resource by name from the RO's resource listing, and
+downloads it to a filename provided by the user.
 """
 
 import argparse
@@ -37,8 +38,8 @@ def parse_args(argv=None):
     parser.add_argument(
         "--semantic-resource-filename",
         type=str,
-        default=None,
-        help="Output filename for the Annotation Collection resource.",
+        required=True,
+        help="Output filename for the semantic benchmark resource.",
     )
     parser.add_argument(
         "--use-production-rohub",
