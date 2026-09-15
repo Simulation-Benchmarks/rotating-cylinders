@@ -23,8 +23,8 @@ DEFAULT_CRATE_NAME = "rotating-cylinders provenance (OpenFOAM)"
 DEFAULT_CRATE_DESCRIPTION = "Benchmark for rotating cylinders"
 
 UNIT_SYMBOLS = {
-    "unit:M": "m",
-    "unit:RAD-PER-SEC": "rad/s",
+    "M": "m",
+    "RAD-PER-SEC": "rad/s",
 }
 
 
