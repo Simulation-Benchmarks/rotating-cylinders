@@ -27,6 +27,9 @@
     "numerical variable": {
       "@id": "m4i:NumericalVariable"
     },
+    "text variable": {
+      "@id": "m4i:TextVariable"
+    },
     "processing step": {
       "@id": "m4i:ProcessingStep"
     },
@@ -242,6 +245,7 @@
     },
     {
       "@id": "local:variable_outer_radius",
+      "@type": "m4i:NumericalVariable",
       "label": "outer_radius",
       "has numerical value": 2.0,
       "has unit": {
@@ -273,6 +277,7 @@
     },
     {
       "@id": "local:variable_inner_radius",
+      "@type": "m4i:NumericalVariable",
       "label": "inner_radius",
       "has numerical value": 1.0,
       "has unit": {
@@ -304,6 +309,7 @@
     },
     {
       "@id": "local:variable_cells_radial_20",
+      "@type": "m4i:NumericalVariable",
       "label": "cells_radial",
       "has numerical value": 20,
       "has unit": {
@@ -338,6 +344,7 @@
     },
     {
       "@id": "local:variable_cells_radial_40",
+      "@type": "m4i:NumericalVariable",
       "label": "cells_radial",
       "has numerical value": 40,
       "has unit": {
@@ -372,6 +379,7 @@
     },
      {
       "@id": "local:variable_cells_radial_80",
+      "@type": "m4i:NumericalVariable",
       "label": "cells_radial",
       "has numerical value": 80,
       "has unit": {
@@ -406,6 +414,7 @@
     },
     {
       "@id": "local:variable_cells_angular_80",
+      "@type": "m4i:NumericalVariable",
       "label": "cells_angular",
       "has numerical value": 80,
       "has unit": {
@@ -440,6 +449,7 @@
     },
     {
       "@id": "local:variable_cells_angular_160",
+      "@type": "m4i:NumericalVariable",
       "label": "cells_angular",
       "has numerical value": 160,
       "has unit": {
@@ -474,6 +484,7 @@
     },
     {
       "@id": "local:variable_cells_angular_320",
+      "@type": "m4i:NumericalVariable",
       "label": "cells_angular",
       "has numerical value": 320,
       "has unit": {
@@ -508,6 +519,7 @@
     },
     {
       "@id": "local:variable_mesh_grading",
+      "@type": "m4i:NumericalVariable",
       "label": "mesh_grading",
       "has numerical value": 1.1,
       "has unit": {
@@ -542,6 +554,7 @@
     },
     {
       "@id": "local:variable_angular_velocity_inner_cylinder",
+      "@type": "m4i:NumericalVariable",
       "label": "angular_velocity_inner_cylinder",
       "has numerical value": 100,
       "has unit": {
@@ -573,6 +586,7 @@
     },
     {
       "@id": "local:variable_angular_velocity_outer_cylinder",
+      "@type": "m4i:NumericalVariable",
       "label": "angular_velocity_outer_cylinder",
       "has numerical value": 0,
       "has unit": {
