@@ -2,9 +2,10 @@ import json
 from pathlib import Path
 
 with open("parameters.json") as f:
-    config = json.load(f)
+    parameters = json.load(f)
 
 _SNAKEFILE_DIR = Path(workflow.snakefile).resolve().parent
+tool_version = str(config.get("tool_version", "2412"))
 
 rule all:
     input: "solution_metrics.json"
@@ -16,15 +17,15 @@ rule run_simulation_container:
         directory("10000"),
         "log.simpleFoam"
     params:
-        r0 = config['inner_radius[m]'], 
-        r1 = config['outer_radius[m]'],
-        nr = config['cells_radial'],
-        ntheta = config['cells_angular'] // 4,
-        g = config['mesh_grading'],
-        omega = config['angular_velocity_inner_cylinder[rad/s]']
+        r0 = parameters['inner_radius[m]'],
+        r1 = parameters['outer_radius[m]'],
+        nr = parameters['cells_radial'],
+        ntheta = parameters['cells_angular'] // 4,
+        g = parameters['mesh_grading'],
+        omega = parameters['angular_velocity_inner_cylinder[rad/s]']
     resources:
         serial_run=1
-    container: "docker://opencfd/openfoam-run:2412"
+    container: f"docker://opencfd/openfoam-run:{tool_version}"
     shell:
         """
         set -euo pipefail
@@ -37,7 +38,7 @@ rule run_simulation_container:
             {input.template} > system/blockMeshDict
         sed -i "s/{{omega}}/{params.omega}/g" constant/MRFProperties
 
-        set +u && source /usr/lib/openfoam/openfoam2412/etc/bashrc && set -u
+        set +u && source /usr/lib/openfoam/openfoam{tool_version}/etc/bashrc && set -u
         chmod +x Allrun
         ./Allrun
 
