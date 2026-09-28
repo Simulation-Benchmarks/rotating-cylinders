@@ -37,7 +37,7 @@ jobs:
           ref: ${{ inputs.branch || github.ref_name }}
 
       - name: Install semantic-benchmark
-        run: python -m pip install semantic-benchmark
+        run: python -m pip install "semantic-benchmark<=0.3.2"
 
       - name: Select RoHub credentials
         shell: bash
@@ -50,7 +50,7 @@ jobs:
             echo "ROHUB_PASSWORD=${{ secrets.ROHUB_DEV_PASSWORD }}" >> "${GITHUB_ENV}"
           fi
 
-      - name: Download benchmark resources from RoHub
+      - name: Download benchmark RO-Crate and JSON-LD from RoHub
         shell: bash
         run: |
           mkdir -p "${GITHUB_WORKSPACE}/downloaded-benchmark"
@@ -59,10 +59,11 @@ jobs:
             rohub_args=(--use-production-rohub)
           fi
 
-          python provenance/download_benchmark.py \
+          download-semantic-benchmark \
             --identifier "${BENCHMARK_ROHUB_IDENTIFIER}" \
             --username "${ROHUB_USERNAME}" \
             --password "${ROHUB_PASSWORD}" \
+            --path "${GITHUB_WORKSPACE}/downloaded-benchmark" \
             --semantic-resource-filename "${GITHUB_WORKSPACE}/${BENCHMARK_FILE}" \
             "${rohub_args[@]}"
 
@@ -126,10 +127,6 @@ jobs:
           environment-file: provenance/environment_provenance.yml
           conda-remove-defaults: "true"
 
-      - name: Install semantic-benchmark
-        shell: bash -l {0}
-        run: python -m pip install semantic-benchmark
-
       - name: Select RoHub credentials
         shell: bash
         run: |
@@ -154,7 +151,7 @@ jobs:
             rohub_args=(--use-production-rohub)
           fi
 
-          python provenance/upload_provenance.py \
+          upload-semantic-benchmark \
             --provenance_folderpath "${GITHUB_WORKSPACE}/artifacts/${TOOL}/${TOOL}_rocrate.zip" \
             --benchmark-name "${BENCHMARK_NAME}" \
             --username "${ROHUB_USERNAME}" \
