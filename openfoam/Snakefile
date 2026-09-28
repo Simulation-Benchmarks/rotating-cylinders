@@ -5,7 +5,7 @@ with open("parameters.json") as f:
     parameters = json.load(f)
 
 _SNAKEFILE_DIR = Path(workflow.snakefile).resolve().parent
-tool_version = str(config.get("tool_version", "2412"))
+software_version = str(config.get("software_version", "2412"))
 
 rule all:
     input: "solution_metrics.json"
@@ -25,7 +25,7 @@ rule run_simulation_container:
         omega = parameters['angular_velocity_inner_cylinder[rad/s]']
     resources:
         serial_run=1
-    container: f"docker://opencfd/openfoam-run:{tool_version}"
+    container: f"docker://opencfd/openfoam-run:{software_version}"
     shell:
         """
         set -euo pipefail
@@ -38,7 +38,7 @@ rule run_simulation_container:
             {input.template} > system/blockMeshDict
         sed -i "s/{{omega}}/{params.omega}/g" constant/MRFProperties
 
-        set +u && source /usr/lib/openfoam/openfoam{tool_version}/etc/bashrc && set -u
+        set +u && source /usr/lib/openfoam/openfoam{software_version}/etc/bashrc && set -u
         chmod +x Allrun
         ./Allrun
 

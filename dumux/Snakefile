@@ -4,7 +4,7 @@ from pathlib import Path
 
 # Use workflow.basedir to find the root relative to the Snakefile
 shared_dir = Path(workflow.basedir).parent
-container_image = f"git.iws.uni-stuttgart.de:4567/benchmarks/rotating-cylinders:{config.get('tool_version', '3.1')}"
+container_image = f"git.iws.uni-stuttgart.de:4567/benchmarks/rotating-cylinders:{config.get('software_version', '3.1')}"
 container_shared_dir = "/dumux/shared"
 
 rule all:
