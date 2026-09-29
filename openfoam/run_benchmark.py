@@ -1,7 +1,8 @@
-"""Run the Fenics benchmark for each semantic benchmark configuration."""
+"""Run the OpenFOAM benchmark for each semantic benchmark configuration."""
 
 import argparse
 import logging
+import re
 import subprocess
 import zipfile
 from argparse import Namespace
@@ -12,7 +13,7 @@ from semantic_benchmark import runner
 LOGGER = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-TOOL_NAME = "openfoam"
+TOOL_NAME = "OpenFOAM"
 BENCHMARK_DIR = Path(__file__).resolve().parent
 
 PROVENANCE_REPORT_NAME = "Rotating Cylinders Provenance"
@@ -29,7 +30,7 @@ UNIT_SYMBOLS = {
 
 
 def parse_arguments() -> Namespace:
-    """Parse command-line arguments for the Fenics benchmark runner."""
+    """Parse command-line arguments for the OpenFOAM benchmark runner."""
     parser = argparse.ArgumentParser(
         description=(
             f"Run the {TOOL_NAME} benchmark workflow for all benchmark configurations."
@@ -68,12 +69,23 @@ def parse_arguments() -> Namespace:
         default=DEFAULT_CRATE_DESCRIPTION,
         help="Description recorded in the generated aggregate RO-Crate.",
     )
+    parser.add_argument(
+        "--software-version",
+        required=True,
+        help="Exact OpenFOAM version recorded in the aggregate RO-Crate.",
+    )
+    parser.add_argument(
+        "--software-url",
+        required=True,
+        help="Software URL recorded in the aggregate RO-Crate.",
+    )
     return parser.parse_args()
 
 
 def build_snakemake_command(
     benchmark_dir: Path,
     configuration: str,
+    software_version: str,
 ) -> list[str]:
     """Build the base Snakemake command for one configuration."""
     return [
@@ -89,6 +101,7 @@ def build_snakemake_command(
         f"--bind {REPO_ROOT}/openfoam:/openfoam/shared",
         "--config",
         f'conf_name="{configuration}"',
+        f"software_version={software_version}",
         "--force",
     ]
 
@@ -97,9 +110,10 @@ def run_snakemake_workflow(
     benchmark_dir: Path,
     configuration: str,
     output_dir: Path,
+    software_version: str,
 ) -> None:
     """Run the Snakemake workflow normally and then with provenance reporting."""
-    base_cmd = build_snakemake_command(benchmark_dir, configuration)
+    base_cmd = build_snakemake_command(benchmark_dir, configuration, software_version)
     reporter_args = runner.build_provenance_reporter_args(
         configuration,
         tool_name=TOOL_NAME,
@@ -121,26 +135,33 @@ def extract_case_template(benchmark_dir: Path, output_dir: Path) -> None:
         zip_ref.extractall(output_dir)
 
 
-def run_configuration(parameter_file: Path, benchmark_dir: Path) -> None:
+def run_configuration(parameter_file: Path, benchmark_dir: Path, software_version: str) -> Path:
     """Prepare and execute one benchmark configuration."""
     configuration, output_dir = runner.prepare_configuration(
         parameter_file, benchmark_dir
     )
     extract_case_template(benchmark_dir, output_dir)
 
-    run_snakemake_workflow(benchmark_dir, configuration, output_dir)
+    run_snakemake_workflow(benchmark_dir, configuration, output_dir, software_version)
 
     LOGGER.info("Workflow executed successfully for configuration %s.", configuration)
+    return runner.reporter_rocrate_path(output_dir, configuration, TOOL_NAME)
 
 
 def run_benchmark(args: Namespace) -> None:
-    """Run a complete Fenics benchmark workflow from parsed arguments."""
+    """Run a complete OpenFOAM benchmark workflow from parsed arguments."""
+    if not re.fullmatch(r"\d+", args.software_version):
+        raise ValueError("--software-version must be a numeric OpenFOAM release")
     benchmark = runner.prepare_benchmark(
-        args.benchmark_file, BENCHMARK_DIR, UNIT_SYMBOLS
+        args.benchmark_file, BENCHMARK_DIR, UNIT_SYMBOLS,
+        resource_dir=args.benchmark_file.parent,
+        strict_units=True,
     )
 
-    for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json")):
-        run_configuration(parameter_file, BENCHMARK_DIR)
+    subcrate_paths = [
+        run_configuration(parameter_file, BENCHMARK_DIR, args.software_version)
+        for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json"))
+    ]
 
     rocrate_path = args.result_path / args.rocrate_name
     runner.create_aggregate_rocrate(
@@ -148,16 +169,19 @@ def run_benchmark(args: Namespace) -> None:
         benchmark,
         rocrate_path,
         software_name=TOOL_NAME,
+        software_url=args.software_url,
+        software_version=args.software_version,
         crate_license=args.crate_license,
         crate_name=args.crate_name,
         crate_description=args.crate_description,
         validation_dir=args.result_path / "unpacked_rocrate",
+        subcrate_paths=subcrate_paths,
     )
     LOGGER.info("Aggregate RO-Crate created at %s.", rocrate_path)
 
 
 def main() -> None:
-    """Parse arguments and run the Fenics benchmark."""
+    """Parse arguments and run the OpenFOAM benchmark."""
     runner.configure_logging()
     run_benchmark(parse_arguments())
 

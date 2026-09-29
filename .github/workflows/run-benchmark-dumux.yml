@@ -28,6 +28,10 @@ on:
         required: false
         type: string
         default: ''
+      software_version:
+        description: Exact DuMux version used for this run
+        required: false
+        type: string
 
 env:
   BENCHMARK_NAME: rotating-cylinders
@@ -35,6 +39,8 @@ env:
   EXAMPLE_BENCHMARK_FILE: ${{ inputs.benchmark_file || 'benchmark/1.0.0/minimal-configurations.json' }}
   BRANCH_NAME: ${{ inputs.checkout_ref || github.head_ref || github.ref_name }}
   TOOL: dumux
+  SOFTWARE_URL: https://zbmath.org/software/14293
+  SOFTWARE_VERSION: ${{ inputs.software_version || '3.1' }}
   ROCRATE_LICENSE: https://opensource.org/licenses/MIT
   ROCRATE_NAME: rotating-cylinders provenance (DuMux)
   ROCRATE_DESCRIPTION_BASE: Provenance run of the rotating-cylinders benchmark using DuMux
@@ -78,6 +84,10 @@ jobs:
           name: ${{ inputs.benchmark_artifact_name }}
           path: downloaded-benchmark
 
+      - name: Verify benchmark resources
+        shell: bash -l {0}
+        run: test -f "${GITHUB_WORKSPACE}/${EXAMPLE_BENCHMARK_FILE}"
+
       - name: Setup Apptainer
         uses: eWaterCycle/setup-apptainer@v2
         with:
@@ -93,6 +103,8 @@ jobs:
             --benchmark-file "${GITHUB_WORKSPACE}/${EXAMPLE_BENCHMARK_FILE}" \
             --rocrate-name "${TOOL}_rocrate.zip" \
             --result-path "${GITHUB_WORKSPACE}/${TOOL}/results" \
+            --software-version "${SOFTWARE_VERSION}" \
+            --software-url "${SOFTWARE_URL}" \
             --crate-license "${ROCRATE_LICENSE}" \
             --crate-name "${ROCRATE_NAME}" \
             --crate-description "${ROCRATE_DESCRIPTION}"
@@ -103,6 +115,7 @@ jobs:
           name: ${{ env.TOOL }}_results_${{ env.BENCHMARK_NAME }}
           path: |
             ${{ env.TOOL }}/results/
+            !${{ env.TOOL }}/results/${{ env.TOOL }}_rocrate.zip
 
       - name: Archive ${{ env.TOOL }} aggregate RO-Crate artifact
         uses: actions/upload-artifact@v7

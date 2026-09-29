@@ -25,12 +25,6 @@ SPDX-FileCopyrightText = "2026 The rotating-cylinders authors"
 SPDX-License-Identifier = "MIT"
 
 [[annotations]]
-path = "common/nextflow.config"
-precedence = "closest"
-SPDX-FileCopyrightText = "2026 The rotating-cylinders authors"
-SPDX-License-Identifier = "MIT"
-
-[[annotations]]
 path = ".github/workflows/*"
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 The rotating-cylinders authors"
