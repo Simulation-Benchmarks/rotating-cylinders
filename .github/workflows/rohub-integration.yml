@@ -108,7 +108,7 @@ jobs:
       matrix:
         include:
           - tool: dumux
-            display_name: DuMux
+            display_name: DuMuX
             software_url: https://zbmath.org/software/14293
             software_version: ${{ inputs.dumux_software_version || '3.1' }}
           - tool: openfoam
