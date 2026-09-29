@@ -135,7 +135,7 @@ def extract_case_template(benchmark_dir: Path, output_dir: Path) -> None:
         zip_ref.extractall(output_dir)
 
 
-def run_configuration(parameter_file: Path, benchmark_dir: Path, software_version: str) -> None:
+def run_configuration(parameter_file: Path, benchmark_dir: Path, software_version: str) -> Path:
     """Prepare and execute one benchmark configuration."""
     configuration, output_dir = runner.prepare_configuration(
         parameter_file, benchmark_dir
@@ -145,6 +145,7 @@ def run_configuration(parameter_file: Path, benchmark_dir: Path, software_versio
     run_snakemake_workflow(benchmark_dir, configuration, output_dir, software_version)
 
     LOGGER.info("Workflow executed successfully for configuration %s.", configuration)
+    return runner.reporter_rocrate_path(output_dir, configuration, TOOL_NAME)
 
 
 def run_benchmark(args: Namespace) -> None:
@@ -157,8 +158,10 @@ def run_benchmark(args: Namespace) -> None:
         strict_units=True,
     )
 
-    for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json")):
+    subcrate_paths = [
         run_configuration(parameter_file, BENCHMARK_DIR, args.software_version)
+        for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json"))
+    ]
 
     rocrate_path = args.result_path / args.rocrate_name
     runner.create_aggregate_rocrate(
@@ -172,6 +175,7 @@ def run_benchmark(args: Namespace) -> None:
         crate_name=args.crate_name,
         crate_description=args.crate_description,
         validation_dir=args.result_path / "unpacked_rocrate",
+        subcrate_paths=subcrate_paths,
     )
     LOGGER.info("Aggregate RO-Crate created at %s.", rocrate_path)
 
