@@ -2,7 +2,6 @@
 
 import argparse
 import logging
-import re
 import subprocess
 from argparse import Namespace
 from pathlib import Path
@@ -12,8 +11,10 @@ from semantic_benchmark import runner
 LOGGER = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-TOOL_NAME = "DuMux"
+SOFTWARE_NAME = "DuMux"
 BENCHMARK_DIR = Path(__file__).resolve().parent
+SOFTWARE_VERSION = "3.1"
+SOFTWARE_URL = "https://zbmath.org/software/14293"
 
 PROVENANCE_REPORT_NAME = "Rotating Cylinders Provenance"
 PROVENANCE_REPORT_DESCRIPTION = "Benchmark for rotating cylinders"
@@ -32,7 +33,7 @@ def parse_arguments() -> Namespace:
     """Parse command-line arguments for the DuMux benchmark runner."""
     parser = argparse.ArgumentParser(
         description=(
-            f"Run the {TOOL_NAME} benchmark workflow for all benchmark configurations."
+            f"Run the {SOFTWARE_NAME} benchmark workflow for all benchmark configurations."
         )
     )
     parser.add_argument(
@@ -50,7 +51,7 @@ def parse_arguments() -> Namespace:
     parser.add_argument(
         "--rocrate-name",
         type=str,
-        default=f"{TOOL_NAME}-RoCrate.zip",
+        default=f"{SOFTWARE_NAME}-RoCrate.zip",
         help="Filename or path for the generated aggregate RO-Crate zip file.",
     )
     parser.add_argument(
@@ -67,16 +68,6 @@ def parse_arguments() -> Namespace:
         "--crate-description",
         default=DEFAULT_CRATE_DESCRIPTION,
         help="Description recorded in the generated aggregate RO-Crate.",
-    )
-    parser.add_argument(
-        "--software-version",
-        required=True,
-        help="Exact DuMux version recorded in the aggregate RO-Crate.",
-    )
-    parser.add_argument(
-        "--software-url",
-        required=True,
-        help="Software URL recorded in the aggregate RO-Crate.",
     )
     return parser.parse_args()
 
@@ -112,7 +103,7 @@ def run_snakemake_workflow(
     base_cmd = build_snakemake_command(benchmark_dir, configuration, software_version)
     reporter_args = runner.build_provenance_reporter_args(
         configuration,
-        tool_name=TOOL_NAME,
+        tool_name=SOFTWARE_NAME,
         report_name=PROVENANCE_REPORT_NAME,
         report_description=PROVENANCE_REPORT_DESCRIPTION,
         report_license=PROVENANCE_REPORT_LICENSE,
@@ -135,13 +126,11 @@ def run_configuration(
     run_snakemake_workflow(benchmark_dir, configuration, output_dir, software_version)
 
     LOGGER.info("Workflow executed successfully for configuration %s.", configuration)
-    return runner.reporter_rocrate_path(output_dir, configuration, TOOL_NAME)
+    return runner.reporter_rocrate_path(output_dir, configuration, SOFTWARE_NAME)
 
 
 def run_benchmark(args: Namespace) -> None:
     """Run a complete DuMux benchmark workflow from parsed arguments."""
-    if not re.fullmatch(r"\d+(?:\.\d+)+", args.software_version):
-        raise ValueError("--software-version must be a dotted numeric version")
     benchmark = runner.prepare_benchmark(
         args.benchmark_file, BENCHMARK_DIR, UNIT_SYMBOLS,
         resource_dir=args.benchmark_file.parent,
@@ -149,7 +138,7 @@ def run_benchmark(args: Namespace) -> None:
     )
 
     subcrate_paths = [
-        run_configuration(parameter_file, BENCHMARK_DIR, args.software_version)
+        run_configuration(parameter_file, BENCHMARK_DIR, SOFTWARE_VERSION)
         for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json"))
     ]
 
@@ -158,9 +147,9 @@ def run_benchmark(args: Namespace) -> None:
         args.result_path,
         benchmark,
         rocrate_path,
-        software_name=TOOL_NAME,
-        software_url=args.software_url,
-        software_version=args.software_version,
+        software_name=SOFTWARE_NAME,
+        software_url=SOFTWARE_URL,
+        software_version=SOFTWARE_VERSION,
         crate_license=args.crate_license,
         crate_name=args.crate_name,
         crate_description=args.crate_description,
