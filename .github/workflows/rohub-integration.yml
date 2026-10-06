@@ -37,7 +37,7 @@ jobs:
           ref: ${{ inputs.branch || github.ref_name }}
 
       - name: Install semantic-benchmark
-        run: python -m pip install "semantic-benchmark<=0.4.0"
+        run: python -m pip install "semantic-benchmark<=0.4.1"
 
       - name: Select RoHub credentials
         shell: bash
@@ -97,18 +97,12 @@ jobs:
         include:
           - software: dumux
             display_name: DuMuX
-            software_url: https://zbmath.org/software/14293
-            software_version: '3.1'
           - software: openfoam
             display_name: OpenFOAM
-            software_url: https://zbmath.org/software/4317
-            software_version: '2412'
     uses: ./.github/workflows/upload-rocrate.yml
     with:
       software: ${{ matrix.software }}
       display_name: ${{ matrix.display_name }}
-      software_url: ${{ matrix.software_url }}
-      software_version: ${{ matrix.software_version }}
       checkout_ref: ${{ inputs.branch || github.ref_name }}
       use_production_rohub: ${{ inputs.use_production_rohub }}
     secrets: inherit
