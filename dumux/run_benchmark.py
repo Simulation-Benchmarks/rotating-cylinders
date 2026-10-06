@@ -11,8 +11,10 @@ from semantic_benchmark import runner
 LOGGER = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-TOOL_NAME = "dumux"
+SOFTWARE_NAME = "DuMux"
 BENCHMARK_DIR = Path(__file__).resolve().parent
+SOFTWARE_VERSION = "3.1"
+SOFTWARE_URL = "https://zbmath.org/software/14293"
 
 PROVENANCE_REPORT_NAME = "Rotating Cylinders Provenance"
 PROVENANCE_REPORT_DESCRIPTION = "Benchmark for rotating cylinders"
@@ -28,10 +30,10 @@ UNIT_SYMBOLS = {
 
 
 def parse_arguments() -> Namespace:
-    """Parse command-line arguments for the Fenics benchmark runner."""
+    """Parse command-line arguments for the DuMux benchmark runner."""
     parser = argparse.ArgumentParser(
         description=(
-            f"Run the {TOOL_NAME} benchmark workflow for all benchmark configurations."
+            f"Run the {SOFTWARE_NAME} benchmark workflow for all benchmark configurations."
         )
     )
     parser.add_argument(
@@ -49,7 +51,7 @@ def parse_arguments() -> Namespace:
     parser.add_argument(
         "--rocrate-name",
         type=str,
-        default=f"{TOOL_NAME}-RoCrate.zip",
+        default=f"{SOFTWARE_NAME}-RoCrate.zip",
         help="Filename or path for the generated aggregate RO-Crate zip file.",
     )
     parser.add_argument(
@@ -73,6 +75,7 @@ def parse_arguments() -> Namespace:
 def build_snakemake_command(
     benchmark_dir: Path,
     configuration: str,
+    software_version: str,
 ) -> list[str]:
     """Build the base Snakemake command for one configuration."""
     return [
@@ -88,18 +91,19 @@ def build_snakemake_command(
         f"--bind {REPO_ROOT}/dumux:/dumux/shared",
         "--config",
         f'conf_name="{configuration}"',
+        f"software_version={software_version}",
         "--force",
     ]
 
 
 def run_snakemake_workflow(
-    benchmark_dir: Path, configuration: str, output_dir: Path
+    benchmark_dir: Path, configuration: str, output_dir: Path, software_version: str
 ) -> None:
     """Run the Snakemake workflow normally and then with provenance reporting."""
-    base_cmd = build_snakemake_command(benchmark_dir, configuration)
+    base_cmd = build_snakemake_command(benchmark_dir, configuration, software_version)
     reporter_args = runner.build_provenance_reporter_args(
         configuration,
-        tool_name=TOOL_NAME,
+        tool_name=SOFTWARE_NAME,
         report_name=PROVENANCE_REPORT_NAME,
         report_description=PROVENANCE_REPORT_DESCRIPTION,
         report_license=PROVENANCE_REPORT_LICENSE,
@@ -112,42 +116,51 @@ def run_snakemake_workflow(
 def run_configuration(
     parameter_file: Path,
     benchmark_dir: Path,
-) -> None:
+    software_version: str,
+) -> Path:
     """Prepare and execute one benchmark configuration."""
     configuration, output_dir = runner.prepare_configuration(
         parameter_file, benchmark_dir
     )
 
-    run_snakemake_workflow(benchmark_dir, configuration, output_dir)
+    run_snakemake_workflow(benchmark_dir, configuration, output_dir, software_version)
 
     LOGGER.info("Workflow executed successfully for configuration %s.", configuration)
+    return runner.reporter_rocrate_path(output_dir, configuration, SOFTWARE_NAME)
 
 
 def run_benchmark(args: Namespace) -> None:
-    """Run a complete Fenics benchmark workflow from parsed arguments."""
+    """Run a complete DuMux benchmark workflow from parsed arguments."""
     benchmark = runner.prepare_benchmark(
-        args.benchmark_file, BENCHMARK_DIR, UNIT_SYMBOLS
+        args.benchmark_file, BENCHMARK_DIR, UNIT_SYMBOLS,
+        resource_dir=args.benchmark_file.parent,
+        strict_units=True,
     )
 
-    for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json")):
-        run_configuration(parameter_file, BENCHMARK_DIR)
+    subcrate_paths = [
+        run_configuration(parameter_file, BENCHMARK_DIR, SOFTWARE_VERSION)
+        for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json"))
+    ]
 
     rocrate_path = args.result_path / args.rocrate_name
     runner.create_aggregate_rocrate(
         args.result_path,
         benchmark,
         rocrate_path,
-        software_name=TOOL_NAME,
+        software_name=SOFTWARE_NAME,
+        software_url=SOFTWARE_URL,
+        software_version=SOFTWARE_VERSION,
         crate_license=args.crate_license,
         crate_name=args.crate_name,
         crate_description=args.crate_description,
         validation_dir=args.result_path / "unpacked_rocrate",
+        subcrate_paths=subcrate_paths,
     )
     LOGGER.info("Aggregate RO-Crate created at %s.", rocrate_path)
 
 
 def main() -> None:
-    """Parse arguments and run the Fenics benchmark."""
+    """Parse arguments and run the DuMux benchmark."""
     runner.configure_logging()
     run_benchmark(parse_arguments())
 
