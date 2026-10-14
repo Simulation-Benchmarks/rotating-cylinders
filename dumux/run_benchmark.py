@@ -11,7 +11,7 @@ from semantic_benchmark import runner
 LOGGER = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SOFTWARE_NAME = "DuMux"
+SOFTWARE_NAME = "DuMuX"
 BENCHMARK_DIR = Path(__file__).resolve().parent
 SOFTWARE_VERSION = "3.1"
 SOFTWARE_URL = "https://zbmath.org/software/14293"
@@ -20,7 +20,7 @@ PROVENANCE_REPORT_NAME = "Rotating Cylinders Provenance"
 PROVENANCE_REPORT_DESCRIPTION = "Benchmark for rotating cylinders"
 PROVENANCE_REPORT_LICENSE = "https://opensource.org/licenses/MIT"
 DEFAULT_CRATE_LICENSE = "https://opensource.org/licenses/MIT"
-DEFAULT_CRATE_NAME = "rotating-cylinders provenance (DuMux)"
+DEFAULT_CRATE_NAME = "rotating-cylinders provenance (DuMuX)"
 DEFAULT_CRATE_DESCRIPTION = "Benchmark for rotating cylinders"
 
 UNIT_SYMBOLS = {

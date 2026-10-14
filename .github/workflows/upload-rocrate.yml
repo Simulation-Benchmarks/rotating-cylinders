@@ -9,6 +9,9 @@ on:
       display_name:
         required: true
         type: string
+      benchmark_rohub_identifier:
+        required: true
+        type: string
       checkout_ref:
         required: true
         type: string
@@ -72,6 +75,7 @@ jobs:
           upload-semantic-benchmark \
             --provenance_folderpath "${GITHUB_WORKSPACE}/artifacts/${SOFTWARE_NAME}/${SOFTWARE_NAME}_rocrate.zip" \
             --benchmark-name "${BENCHMARK_NAME}" \
+            --benchmark-rohub-identifier "${{ inputs.benchmark_rohub_identifier }}" \
             --username "${ROHUB_USERNAME}" \
             --password "${ROHUB_PASSWORD}" \
             --code-repository-url "${CODE_REPOSITORY_URL}" \

@@ -36,8 +36,8 @@ env:
   BRANCH_NAME: ${{ inputs.checkout_ref || github.head_ref || github.ref_name }}
   SOFTWARE_NAME: dumux
   ROCRATE_LICENSE: https://opensource.org/licenses/MIT
-  ROCRATE_NAME: rotating-cylinders provenance (DuMux)
-  ROCRATE_DESCRIPTION_BASE: Provenance run of the rotating-cylinders benchmark using DuMux
+  ROCRATE_NAME: rotating-cylinders provenance (DuMuX)
+  ROCRATE_DESCRIPTION_BASE: Provenance run of the rotating-cylinders benchmark using DuMuX
 
 jobs:
   run-examples:

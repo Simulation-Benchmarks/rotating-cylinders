@@ -21,7 +21,7 @@ permissions:
 
 env:
   BENCHMARK_NAME: rotating-cylinders
-  BENCHMARK_ROHUB_IDENTIFIER: b6098239-ec68-41d0-87e6-992b2e4bf406
+  BENCHMARK_ROHUB_IDENTIFIER: &benchmark_rohub_identifier b6098239-ec68-41d0-87e6-992b2e4bf406
   BENCHMARK_ARTIFACT_NAME: downloaded-benchmark-resources
   BENCHMARK_FILE: downloaded-benchmark/benchmark.json
   CODE_REPOSITORY_URL: https://github.com/${{ github.repository }}/tree/${{ inputs.branch || github.ref_name }}
@@ -103,6 +103,7 @@ jobs:
     with:
       software: ${{ matrix.software }}
       display_name: ${{ matrix.display_name }}
+      benchmark_rohub_identifier: *benchmark_rohub_identifier
       checkout_ref: ${{ inputs.branch || github.ref_name }}
       use_production_rohub: ${{ inputs.use_production_rohub }}
     secrets: inherit
