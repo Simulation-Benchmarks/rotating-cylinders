@@ -10,6 +10,11 @@ on:
         description: Branch to run and publish
         required: true
         default: main
+      download_from_rohub:
+        description: Download benchmark resources from RoHub instead of using local files
+        required: true
+        type: boolean
+        default: false
       use_production_rohub:
         description: Upload to production RoHub
         required: true
@@ -20,11 +25,7 @@ permissions:
   contents: read
 
 env:
-  BENCHMARK_NAME: rotating-cylinders
   BENCHMARK_ROHUB_IDENTIFIER: &benchmark_rohub_identifier b6098239-ec68-41d0-87e6-992b2e4bf406
-  BENCHMARK_ARTIFACT_NAME: downloaded-benchmark-resources
-  BENCHMARK_FILE: downloaded-benchmark/benchmark.json
-  CODE_REPOSITORY_URL: https://github.com/${{ github.repository }}/tree/${{ inputs.branch || github.ref_name }}
   USE_PRODUCTION_ROHUB: ${{ inputs.use_production_rohub }}
 
 jobs:
@@ -32,14 +33,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo content
+        if: inputs.download_from_rohub
         uses: actions/checkout@v7
         with:
           ref: ${{ inputs.branch || github.ref_name }}
 
       - name: Install semantic-benchmark
-        run: python -m pip install "semantic-benchmark<=0.4.1"
+        if: inputs.download_from_rohub
+        run: python -m pip install -r requirements.txt
 
       - name: Select RoHub credentials
+        if: inputs.download_from_rohub
         shell: bash
         run: |
           if [ "${USE_PRODUCTION_ROHUB}" = "true" ]; then
@@ -51,6 +55,7 @@ jobs:
           fi
 
       - name: Download benchmark RO-Crate and JSON-LD from RoHub
+        if: inputs.download_from_rohub
         shell: bash
         run: |
           mkdir -p "${GITHUB_WORKSPACE}/downloaded-benchmark"
@@ -64,13 +69,14 @@ jobs:
             --username "${ROHUB_USERNAME}" \
             --password "${ROHUB_PASSWORD}" \
             --path "${GITHUB_WORKSPACE}/downloaded-benchmark" \
-            --semantic-resource-filename "${GITHUB_WORKSPACE}/${BENCHMARK_FILE}" \
+            --semantic-resource-filename "${GITHUB_WORKSPACE}/downloaded-benchmark/benchmark.json" \
             "${rohub_args[@]}"
 
       - name: Archive downloaded benchmark resources
+        if: inputs.download_from_rohub
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.BENCHMARK_ARTIFACT_NAME }}
+          name: downloaded-benchmark-resources
           path: downloaded-benchmark/
 
   run-dumux:
@@ -78,21 +84,22 @@ jobs:
     uses: ./.github/workflows/run-benchmark-dumux.yml
     with:
       checkout_ref: ${{ inputs.branch || github.ref_name }}
-      benchmark_file: downloaded-benchmark/benchmark.json
-      benchmark_artifact_name: downloaded-benchmark-resources
+      benchmark_file: ${{ inputs.download_from_rohub && 'downloaded-benchmark/benchmark.json' || 'benchmark/1.0.0/minimal-configurations.json' }}
+      benchmark_artifact_name: ${{ inputs.download_from_rohub && 'downloaded-benchmark-resources' || '' }}
 
   run-openfoam:
     needs: prepare-benchmark
     uses: ./.github/workflows/run-benchmark-openfoam.yml
     with:
       checkout_ref: ${{ inputs.branch || github.ref_name }}
-      benchmark_file: downloaded-benchmark/benchmark.json
-      benchmark_artifact_name: downloaded-benchmark-resources
+      benchmark_file: ${{ inputs.download_from_rohub && 'downloaded-benchmark/benchmark.json' || 'benchmark/1.0.0/minimal-configurations.json' }}
+      benchmark_artifact_name: ${{ inputs.download_from_rohub && 'downloaded-benchmark-resources' || '' }}
 
   upload:
     needs: [run-dumux, run-openfoam]
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         include:
           - software: dumux
