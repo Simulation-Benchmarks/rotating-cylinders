@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Replaced the Zenodo DOI placeholder with the real DOI (`10.5281/zenodo.21922264`) in `README.md`, `CITATION.cff`, and `codemeta.json`, now that the GitHub–Zenodo integration has archived v0.1.0.
+- The DuMuX workflow now pulls its container image from the GitHub mirror `ghcr.io/simulation-benchmarks/dumux-rotating-cylinders`, because `git.iws.uni-stuttgart.de` is no longer reachable from GitHub-hosted runners (#25).
 
 ## [0.1.0] - 2026-08-13
 
