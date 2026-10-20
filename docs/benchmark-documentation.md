@@ -100,11 +100,3 @@ field in the postprocessing step.
 | mesh refinement   | Number / size of cells per configuration.  |
 | solver tolerances | Linear and non-linear solver tolerances.   |
 | time step         | Time step (for transient runs).           |
-
-## Numerical Results
-
-The generated notebook `notebooks/rotating_cylinders.ipynb` is rebuilt by the
-`merge-docs-to-notebooks` GitHub Actions workflow and is uploaded as an
-artifact on every push to `main`, PR to `main`, and manual dispatch.
-
-test
