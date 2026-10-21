@@ -8,4 +8,4 @@ dependencies:
   - pip
   - pip:
       - "git+https://github.com/Simulation-Benchmarks/semantic-benchmark.git@29-reporter-plugin-from-snakemake-repository"
-      - "git+https://github.com/snakemake/snakemake-report-plugin-rocrate.git@12-assigning-instruments-per-workflow-action"
+      - "git+https://github.com/snakemake/snakemake-report-plugin-rocrate.git@main"
