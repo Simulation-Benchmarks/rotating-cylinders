@@ -18,11 +18,6 @@ on:
         required: false
         type: string
         default: benchmark/1.0.0/minimal-configurations.json
-      benchmark_zip:
-        description: Optional path to the benchmark zip archive
-        required: false
-        type: string
-        default: ''
       benchmark_artifact_name:
         description: Optional artifact containing the benchmark resources
         required: false

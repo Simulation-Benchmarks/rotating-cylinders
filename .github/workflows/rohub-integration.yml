@@ -1,6 +1,10 @@
 name: RoHub Integration CI
 
 on:
+  push:
+    branches:
+      - 3-testing-reporter-plugin-from-new-repository
+
   schedule:
     - cron: '0 18 * * 5'
 
@@ -15,18 +19,13 @@ on:
         required: true
         type: boolean
         default: false
-      use_production_rohub:
-        description: Upload to production RoHub
-        required: true
-        type: boolean
-        default: true
 
 permissions:
   contents: read
 
 env:
   BENCHMARK_ROHUB_IDENTIFIER: &benchmark_rohub_identifier b6098239-ec68-41d0-87e6-992b2e4bf406
-  USE_PRODUCTION_ROHUB: ${{ inputs.use_production_rohub }}
+  USE_PRODUCTION_ROHUB: "true"
 
 jobs:
   prepare-benchmark:
@@ -112,5 +111,5 @@ jobs:
       display_name: ${{ matrix.display_name }}
       benchmark_rohub_identifier: *benchmark_rohub_identifier
       checkout_ref: ${{ inputs.branch || github.ref_name }}
-      use_production_rohub: ${{ inputs.use_production_rohub }}
+      use_production_rohub: true
     secrets: inherit
