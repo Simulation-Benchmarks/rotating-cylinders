@@ -95,21 +95,23 @@ jobs:
       benchmark_file: ${{ inputs.download_from_rohub && 'downloaded-benchmark/benchmark.json' || 'benchmark/1.0.0/minimal-configurations.json' }}
       benchmark_artifact_name: ${{ inputs.download_from_rohub && 'downloaded-benchmark-resources' || '' }}
 
-  upload:
-    needs: [run-dumux, run-openfoam]
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        include:
-          - software: dumux
-            display_name: DuMuX
-          - software: openfoam
-            display_name: OpenFOAM
+  upload-dumux:
+    needs: run-dumux
     uses: ./.github/workflows/upload-rocrate.yml
     with:
-      software: ${{ matrix.software }}
-      display_name: ${{ matrix.display_name }}
+      software: dumux
+      display_name: DuMuX
+      benchmark_rohub_identifier: *benchmark_rohub_identifier
+      checkout_ref: ${{ inputs.branch || github.ref_name }}
+      use_production_rohub: ${{ inputs.use_production_rohub }}
+    secrets: inherit
+
+  upload-openfoam:
+    needs: run-openfoam
+    uses: ./.github/workflows/upload-rocrate.yml
+    with:
+      software: openfoam
+      display_name: OpenFOAM
       benchmark_rohub_identifier: *benchmark_rohub_identifier
       checkout_ref: ${{ inputs.branch || github.ref_name }}
       use_production_rohub: ${{ inputs.use_production_rohub }}
