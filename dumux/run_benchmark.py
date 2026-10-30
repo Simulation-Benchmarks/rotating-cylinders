@@ -161,7 +161,6 @@ def run_benchmark(args: Namespace) -> None:
         crate_license=args.crate_license,
         crate_name=args.crate_name,
         crate_description=args.crate_description,
-        validation_dir=args.result_path / "unpacked_rocrate",
         subcrate_paths=subcrate_paths,
         workflow_path=args.workflow_path,
         agent_name=args.agent_name,
