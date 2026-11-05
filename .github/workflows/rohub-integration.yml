@@ -1,10 +1,6 @@
 name: RoHub Integration CI
 
 on:
-  push:
-    branches:
-      - 3-testing-reporter-plugin-from-new-repository
-
   schedule:
     - cron: '0 18 * * 5'
 
