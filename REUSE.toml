@@ -67,6 +67,12 @@ SPDX-FileCopyrightText = "2026 The rotating-cylinders authors"
 SPDX-License-Identifier = "CC0-1.0"
 
 [[annotations]]
+path = "**/profiles/rocrate/*"
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 The rotating-cylinders authors"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
 path = ".gitignore"
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 The rotating-cylinders authors"

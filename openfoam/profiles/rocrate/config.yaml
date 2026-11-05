@@ -1,0 +1,5 @@
+report-rocrate-filename: "workflow-run"
+report-rocrate-run-name: "Rotating cylinders (OpenFOAM)"
+report-rocrate-run-description: "Benchmark for rotating cylinders using OpenFOAM"
+report-rocrate-run-license: "https://opensource.org/licenses/MIT"
+report-rocrate-validation-severity: "REQUIRED"

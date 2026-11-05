@@ -17,9 +17,6 @@ BENCHMARK_DIR = Path(__file__).resolve().parent
 SOFTWARE_VERSION = "2412"
 SOFTWARE_URL = "https://zbmath.org/software/4317"
 
-PROVENANCE_REPORT_NAME = "Rotating Cylinders Provenance"
-PROVENANCE_REPORT_DESCRIPTION = "Benchmark for rotating cylinders"
-PROVENANCE_REPORT_LICENSE = "https://opensource.org/licenses/MIT"
 DEFAULT_CRATE_LICENSE = "https://opensource.org/licenses/MIT"
 DEFAULT_CRATE_NAME = "rotating-cylinders provenance (OpenFOAM)"
 DEFAULT_CRATE_DESCRIPTION = "Benchmark for rotating cylinders"
@@ -70,6 +67,14 @@ def parse_arguments() -> Namespace:
         default=DEFAULT_CRATE_DESCRIPTION,
         help="Description recorded in the generated aggregate RO-Crate.",
     )
+    parser.add_argument(
+        "--workflow-path",
+        type=Path,
+        required=True,
+        help="YAML workflow file used as the aggregate crate main entity.",
+    )
+    parser.add_argument("--agent-name", required=True, help="Workflow author and creator name.")
+    parser.add_argument("--agent-orcid", required=True, help="Workflow author and creator ORCID URL.")
     return parser.parse_args()
 
 
@@ -106,11 +111,7 @@ def run_snakemake_workflow(
     """Run the Snakemake workflow normally and then with provenance reporting."""
     base_cmd = build_snakemake_command(benchmark_dir, configuration, software_version)
     reporter_args = runner.build_provenance_reporter_args(
-        configuration,
-        tool_name=SOFTWARE_NAME,
-        report_name=PROVENANCE_REPORT_NAME,
-        report_description=PROVENANCE_REPORT_DESCRIPTION,
-        report_license=PROVENANCE_REPORT_LICENSE,
+        BENCHMARK_DIR / "profiles" / "rocrate"
     )
 
     subprocess.run(base_cmd, check=True, cwd=output_dir)
@@ -136,7 +137,7 @@ def run_configuration(parameter_file: Path, benchmark_dir: Path, software_versio
     run_snakemake_workflow(benchmark_dir, configuration, output_dir, software_version)
 
     LOGGER.info("Workflow executed successfully for configuration %s.", configuration)
-    return runner.reporter_rocrate_path(output_dir, configuration, SOFTWARE_NAME)
+    return runner.reporter_rocrate_path(output_dir)
 
 
 def run_benchmark(args: Namespace) -> None:
@@ -163,8 +164,10 @@ def run_benchmark(args: Namespace) -> None:
         crate_license=args.crate_license,
         crate_name=args.crate_name,
         crate_description=args.crate_description,
-        validation_dir=args.result_path / "unpacked_rocrate",
         subcrate_paths=subcrate_paths,
+        workflow_path=args.workflow_path,
+        agent_name=args.agent_name,
+        agent_orcid=args.agent_orcid,
     )
     LOGGER.info("Aggregate RO-Crate created at %s.", rocrate_path)
 
