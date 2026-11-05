@@ -98,7 +98,7 @@ jobs:
       display_name: DuMuX
       benchmark_rohub_identifier: *benchmark_rohub_identifier
       checkout_ref: ${{ inputs.branch || github.ref_name }}
-      use_production_rohub: ${{ inputs.use_production_rohub }}
+      use_production_rohub: true
     secrets: inherit
 
   upload-openfoam:
