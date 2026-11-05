@@ -7,5 +7,5 @@ dependencies:
   - rdflib
   - pip
   - pip:
-      - "git+https://github.com/Simulation-Benchmarks/semantic-benchmark.git@29-reporter-plugin-from-snakemake-repository"
-      - "git+https://github.com/snakemake/snakemake-report-plugin-rocrate.git@main"
+      - semantic-benchmark~=0.5.0
+      - snakemake-report-plugin-rocrate==0.1.0
