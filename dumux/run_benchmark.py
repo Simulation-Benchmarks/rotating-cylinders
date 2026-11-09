@@ -45,7 +45,7 @@ def parse_arguments() -> Namespace:
     parser.add_argument(
         "--aggregated-profile",
         type=Path,
-        default=BENCHMARK_DIR.parent / "provenance" / "profiles" / "aggregate-crate-dumux.yml",
+        default=BENCHMARK_DIR.parent / "provenance" / "profiles" / "aggregate-rocrate-dumux.yml",
         help="Aggregate RO-Crate profile YAML file.",
     )
     parser.add_argument(
