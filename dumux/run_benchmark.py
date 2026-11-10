@@ -7,21 +7,12 @@ from argparse import Namespace
 from pathlib import Path
 
 from semantic_benchmark import runner
+from semantic_benchmark.rocrate.create import add_tool_parameter
 
 LOGGER = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SOFTWARE_NAME = "DuMuX"
 BENCHMARK_DIR = Path(__file__).resolve().parent
-SOFTWARE_VERSION = "3.1"
-SOFTWARE_URL = "https://zbmath.org/software/14293"
-
-PROVENANCE_REPORT_NAME = "Rotating Cylinders Provenance"
-PROVENANCE_REPORT_DESCRIPTION = "Benchmark for rotating cylinders"
-PROVENANCE_REPORT_LICENSE = "https://opensource.org/licenses/MIT"
-DEFAULT_CRATE_LICENSE = "https://opensource.org/licenses/MIT"
-DEFAULT_CRATE_NAME = "rotating-cylinders provenance (DuMuX)"
-DEFAULT_CRATE_DESCRIPTION = "Benchmark for rotating cylinders"
 
 UNIT_SYMBOLS = {
     "M": "m",
@@ -32,9 +23,7 @@ UNIT_SYMBOLS = {
 def parse_arguments() -> Namespace:
     """Parse command-line arguments for the DuMux benchmark runner."""
     parser = argparse.ArgumentParser(
-        description=(
-            f"Run the {SOFTWARE_NAME} benchmark workflow for all benchmark configurations."
-        )
+        description="Run the benchmark workflow for all benchmark configurations."
     )
     parser.add_argument(
         "--benchmark-file",
@@ -51,25 +40,72 @@ def parse_arguments() -> Namespace:
     parser.add_argument(
         "--rocrate-name",
         type=str,
-        default=f"{SOFTWARE_NAME}-RoCrate.zip",
+        default=None,
         help="Filename or path for the generated aggregate RO-Crate zip file.",
     )
     parser.add_argument(
-        "--crate-license",
-        default=DEFAULT_CRATE_LICENSE,
-        help="License URL recorded in the generated aggregate RO-Crate.",
+        "--aggregate-rocrate-profile",
+        type=Path,
+        default=BENCHMARK_DIR.parent / "provenance" / "profiles" / "aggregate-rocrate-dumux.yml",
+        help="Aggregate RO-Crate profile YAML file.",
     )
     parser.add_argument(
-        "--crate-name",
-        default=DEFAULT_CRATE_NAME,
-        help="Name recorded in the generated aggregate RO-Crate.",
+        "--reporter-rocrate-profile",
+        type=Path,
+        required=True,
+        help="Path to the reporter RO-Crate profile YAML file.",
     )
     parser.add_argument(
-        "--crate-description",
-        default=DEFAULT_CRATE_DESCRIPTION,
-        help="Description recorded in the generated aggregate RO-Crate.",
+        "--workflow-path",
+        type=Path,
+        required=True,
+        help="YAML workflow file used as the aggregate crate main entity.",
     )
     return parser.parse_args()
+
+
+def read_tool_parameters(text: str) -> list[tuple[str, str, str]]:
+    """Parse DuMux INI assignments as (qualified name, type, default value)."""
+    parameters = []
+    section = ""
+    for line_number, raw_line in enumerate(text.splitlines(), start=1):
+        line = raw_line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        if line.startswith("[") and line.endswith("]"):
+            section = line[1:-1].strip()
+            if not section:
+                raise ValueError(f"Empty section on line {line_number}")
+            continue
+        if "=" not in line:
+            raise ValueError(f"Invalid parameter on line {line_number}: {raw_line}")
+        key, value = (part.strip() for part in line.split("=", 1))
+        if not key or not value:
+            raise ValueError(f"Invalid parameter on line {line_number}: {raw_line}")
+        tokens = value.split()
+        if len(tokens) > 1:
+            additional_type = "Text"
+        elif value.lower() in {"true", "false"}:
+            additional_type = "Boolean"
+        else:
+            try:
+                float(value)
+            except ValueError:
+                additional_type = "Text"
+            else:
+                additional_type = (
+                    "Integer" if value.lstrip("+-").isdigit()
+                    else "Float"
+                )
+        parameters.append((f"{section}.{key}" if section else key, additional_type, value))
+    return parameters
+
+
+def add_image_tool_parameters(benchmark, parameter_file: Path) -> None:
+    """Register parameters from the image file preserved by Snakemake."""
+    content = parameter_file.read_text(encoding="utf-8")
+    for name, additional_type, default_value in read_tool_parameters(content):
+        add_tool_parameter(benchmark, name, additional_type, default_value)
 
 
 def build_snakemake_command(
@@ -97,17 +133,12 @@ def build_snakemake_command(
 
 
 def run_snakemake_workflow(
-    benchmark_dir: Path, configuration: str, output_dir: Path, software_version: str
+    benchmark_dir: Path, configuration: str, output_dir: Path,
+    software_version: str, reporter_rocrate_profile: Path,
 ) -> None:
     """Run the Snakemake workflow normally and then with provenance reporting."""
     base_cmd = build_snakemake_command(benchmark_dir, configuration, software_version)
-    reporter_args = runner.build_provenance_reporter_args(
-        configuration,
-        tool_name=SOFTWARE_NAME,
-        report_name=PROVENANCE_REPORT_NAME,
-        report_description=PROVENANCE_REPORT_DESCRIPTION,
-        report_license=PROVENANCE_REPORT_LICENSE,
-    )
+    reporter_args = runner.build_subcrate_args(reporter_rocrate_profile)
 
     subprocess.run(base_cmd, check=True, cwd=output_dir)
     subprocess.run(base_cmd + reporter_args, check=True, cwd=output_dir)
@@ -117,16 +148,19 @@ def run_configuration(
     parameter_file: Path,
     benchmark_dir: Path,
     software_version: str,
+    reporter_rocrate_profile: Path,
 ) -> Path:
     """Prepare and execute one benchmark configuration."""
     configuration, output_dir = runner.prepare_configuration(
         parameter_file, benchmark_dir
     )
 
-    run_snakemake_workflow(benchmark_dir, configuration, output_dir, software_version)
+    run_snakemake_workflow(
+        benchmark_dir, configuration, output_dir, software_version, reporter_rocrate_profile
+    )
 
     LOGGER.info("Workflow executed successfully for configuration %s.", configuration)
-    return runner.reporter_rocrate_path(output_dir, configuration, SOFTWARE_NAME)
+    return runner.reporter_rocrate_path(output_dir)
 
 
 def run_benchmark(args: Namespace) -> None:
@@ -134,27 +168,33 @@ def run_benchmark(args: Namespace) -> None:
     benchmark = runner.prepare_benchmark(
         args.benchmark_file, BENCHMARK_DIR, UNIT_SYMBOLS,
         resource_dir=args.benchmark_file.parent,
-        strict_units=True,
+        aggregate_profile=args.aggregate_rocrate_profile,
     )
+    aggregate_metadata = benchmark.aggregate_profile
 
     subcrate_paths = [
-        run_configuration(parameter_file, BENCHMARK_DIR, SOFTWARE_VERSION)
+        run_configuration(
+            parameter_file, BENCHMARK_DIR, aggregate_metadata.software_version,
+            args.reporter_rocrate_profile,
+        )
         for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json"))
     ]
+    if not subcrate_paths:
+        raise ValueError("No DuMux configurations were generated")
+    parameter_files = [path.parent / "params.input" for path in subcrate_paths]
+    parameter_content = parameter_files[0].read_bytes()
+    if any(path.read_bytes() != parameter_content for path in parameter_files[1:]):
+        raise ValueError("DuMux runs used different params.input files")
+    add_image_tool_parameters(benchmark, parameter_files[0])
 
-    rocrate_path = args.result_path / args.rocrate_name
+    rocrate_name = args.rocrate_name or f'{aggregate_metadata.software_name}-RoCrate.zip'
+    rocrate_path = args.result_path / rocrate_name
     runner.create_aggregate_rocrate(
         args.result_path,
         benchmark,
         rocrate_path,
-        software_name=SOFTWARE_NAME,
-        software_url=SOFTWARE_URL,
-        software_version=SOFTWARE_VERSION,
-        crate_license=args.crate_license,
-        crate_name=args.crate_name,
-        crate_description=args.crate_description,
-        validation_dir=args.result_path / "unpacked_rocrate",
         subcrate_paths=subcrate_paths,
+        workflow_path=args.workflow_path,
     )
     LOGGER.info("Aggregate RO-Crate created at %s.", rocrate_path)
 
