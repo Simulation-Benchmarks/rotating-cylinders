@@ -7,6 +7,7 @@ from argparse import Namespace
 from pathlib import Path
 
 from semantic_benchmark import runner
+from semantic_benchmark.rocrate.create import add_tool_parameter
 
 LOGGER = logging.getLogger(__name__)
 
@@ -61,6 +62,50 @@ def parse_arguments() -> Namespace:
         help="YAML workflow file used as the aggregate crate main entity.",
     )
     return parser.parse_args()
+
+
+def read_tool_parameters(text: str) -> list[tuple[str, str, str]]:
+    """Parse DuMux INI assignments as (qualified name, type, default value)."""
+    parameters = []
+    section = ""
+    for line_number, raw_line in enumerate(text.splitlines(), start=1):
+        line = raw_line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        if line.startswith("[") and line.endswith("]"):
+            section = line[1:-1].strip()
+            if not section:
+                raise ValueError(f"Empty section on line {line_number}")
+            continue
+        if "=" not in line:
+            raise ValueError(f"Invalid parameter on line {line_number}: {raw_line}")
+        key, value = (part.strip() for part in line.split("=", 1))
+        if not key or not value:
+            raise ValueError(f"Invalid parameter on line {line_number}: {raw_line}")
+        tokens = value.split()
+        if len(tokens) > 1:
+            additional_type = "Text"
+        elif value.lower() in {"true", "false"}:
+            additional_type = "Boolean"
+        else:
+            try:
+                float(value)
+            except ValueError:
+                additional_type = "Text"
+            else:
+                additional_type = (
+                    "Integer" if value.lstrip("+-").isdigit()
+                    else "Float"
+                )
+        parameters.append((f"{section}.{key}" if section else key, additional_type, value))
+    return parameters
+
+
+def add_image_tool_parameters(benchmark, parameter_file: Path) -> None:
+    """Register parameters from the image file preserved by Snakemake."""
+    content = parameter_file.read_text(encoding="utf-8")
+    for name, additional_type, default_value in read_tool_parameters(content):
+        add_tool_parameter(benchmark, name, additional_type, default_value)
 
 
 def build_snakemake_command(
@@ -134,6 +179,13 @@ def run_benchmark(args: Namespace) -> None:
         )
         for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json"))
     ]
+    if not subcrate_paths:
+        raise ValueError("No DuMux configurations were generated")
+    parameter_files = [path.parent / "params.input" for path in subcrate_paths]
+    parameter_content = parameter_files[0].read_bytes()
+    if any(path.read_bytes() != parameter_content for path in parameter_files[1:]):
+        raise ValueError("DuMux runs used different params.input files")
+    add_image_tool_parameters(benchmark, parameter_files[0])
 
     rocrate_name = args.rocrate_name or f'{aggregate_metadata.software_name}-RoCrate.zip'
     rocrate_path = args.result_path / rocrate_name

@@ -10,14 +10,16 @@ container_shared_dir = "/dumux/shared"
 rule all:
     input:
         "solution_metrics.json",
-        "test_rotatingcylinders.zip"
+        "test_rotatingcylinders.zip",
+        "params.input"
 
 rule run_simulation:
     input:
         rc_parameters_file = "parameters.json"
     output:
         zip = "test_rotatingcylinders.zip",
-        metrics = "solution_metrics.json"
+        metrics = "solution_metrics.json",
+        tool_parameters = "params.input"
     resources:
         serial_run=1
     singularity:
@@ -42,6 +44,7 @@ rule run_simulation:
             f"""
             set -euo pipefail
             cd /dumux/rotating-cylinders/build-cmake/test/freeflow/navierstokes/rotatingcylinders
+            cp params.input "{container_shared_dir}/results/{conf_name}/params.input"
             
             # Run simulation. We use the container_shared_dir mount point to save results back to the host
             ./test_ff_navierstokes_rotatingcylinders \
