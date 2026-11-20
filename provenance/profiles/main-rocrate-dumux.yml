@@ -1,0 +1,12 @@
+crate-license: "https://opensource.org/licenses/MIT"
+authors:
+  - name: "Sarbani Roy"
+    orcid: "https://orcid.org/0000-0002-5990-0076"
+creator:
+  name: "Mahdi Jafarkhani"
+  orcid: "https://orcid.org/0009-0008-6162-8404"
+software-name: "DuMuX"
+software-version: "3.1"
+software-url: "https://zbmath.org/software/14293"
+crate-name: "rotating-cylinders provenance (DuMuX)"
+crate-description: "Provenance run of the rotating-cylinders benchmark using DuMuX"

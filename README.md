@@ -45,7 +45,7 @@ command-line entrypoints for this rotating-cylinders benchmark.
 
 Scheduled and manual runs use the local benchmark in `benchmark/1.0.0/` by default.
 For a manual run, enable `download_from_rohub` to download benchmark resources from
-RoHub before the tools start. After both tool jobs succeed, their aggregate RO-Crates
+RoHub before the tools start. After both tool jobs succeed, their main RO-Crates
 are uploaded to RoHub one at a time.
 
 ## Interactive Benchmark Evaluation
