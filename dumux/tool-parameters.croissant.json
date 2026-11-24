@@ -1,0 +1,721 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "equivalentProperty": "cr:equivalentProperty",
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "samplingRate": "cr:samplingRate",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
+  },
+  "@type": "sc:Dataset",
+  "name": "DuMux rotating cylinders tool parameters",
+  "description": "Extract tool defaults from the DuMux params.input file copied from the image.",
+  "license": "https://opensource.org/licenses/MIT",
+  "conformsTo": "http://mlcommons.org/croissant/1.1",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "dumux-input",
+      "name": "DuMux input file",
+      "contentUrl": "params.input",
+      "encodingFormat": "text/plain"
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "tool_parameters",
+      "name": "tool_parameters",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Grid.Cells0",
+          "name": "Grid.Cells0",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Grid\\](?:(?!^\\[).)*?^Cells0[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Grid.Cells1",
+          "name": "Grid.Cells1",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Grid\\](?:(?!^\\[).)*?^Cells1[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Grid.Grading0",
+          "name": "Grid.Grading0",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Grid\\](?:(?!^\\[).)*?^Grading0[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Grid.Grading1",
+          "name": "Grid.Grading1",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Grid\\](?:(?!^\\[).)*?^Grading1[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Grid.Radial0",
+          "name": "Grid.Radial0",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Grid\\](?:(?!^\\[).)*?^Radial0[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Grid.Angular1",
+          "name": "Grid.Angular1",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Grid\\](?:(?!^\\[).)*?^Angular1[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Problem.Name",
+          "name": "Problem.Name",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Problem\\](?:(?!^\\[).)*?^Name[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Problem.Omega1",
+          "name": "Problem.Omega1",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Problem\\](?:(?!^\\[).)*?^Omega1[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Problem.Omega2",
+          "name": "Problem.Omega2",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Problem\\](?:(?!^\\[).)*?^Omega2[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Problem.EnableGravity",
+          "name": "Problem.EnableGravity",
+          "dataType": "sc:Boolean",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Problem\\](?:(?!^\\[).)*?^EnableGravity[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Problem.EnableInertiaTerms",
+          "name": "Problem.EnableInertiaTerms",
+          "dataType": "sc:Boolean",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Problem\\](?:(?!^\\[).)*?^EnableInertiaTerms[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/FreeFlow.EnableUnsymmetrizedVelocityGradient",
+          "name": "FreeFlow.EnableUnsymmetrizedVelocityGradient",
+          "dataType": "sc:Boolean",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[FreeFlow\\](?:(?!^\\[).)*?^EnableUnsymmetrizedVelocityGradient[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Flux.UpwindWeight",
+          "name": "Flux.UpwindWeight",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Flux\\](?:(?!^\\[).)*?^UpwindWeight[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Component.LiquidDensity",
+          "name": "Component.LiquidDensity",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Component\\](?:(?!^\\[).)*?^LiquidDensity[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Component.LiquidDynamicViscosity",
+          "name": "Component.LiquidDynamicViscosity",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Component\\](?:(?!^\\[).)*?^LiquidDynamicViscosity[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Mass.Assembly.NumericDifference.PriVarMagnitude",
+          "name": "Mass.Assembly.NumericDifference.PriVarMagnitude",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Mass\\.Assembly\\.NumericDifference\\](?:(?!^\\[).)*?^PriVarMagnitude[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Mass.Assembly.NumericDifference.BaseEpsilon",
+          "name": "Mass.Assembly.NumericDifference.BaseEpsilon",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Mass\\.Assembly\\.NumericDifference\\](?:(?!^\\[).)*?^BaseEpsilon[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Momentum.Assembly.NumericDifference.PriVarMagnitude",
+          "name": "Momentum.Assembly.NumericDifference.PriVarMagnitude",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Momentum\\.Assembly\\.NumericDifference\\](?:(?!^\\[).)*?^PriVarMagnitude[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Momentum.Assembly.NumericDifference.BaseEpsilon",
+          "name": "Momentum.Assembly.NumericDifference.BaseEpsilon",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Momentum\\.Assembly\\.NumericDifference\\](?:(?!^\\[).)*?^BaseEpsilon[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.MaxIterations",
+          "name": "LinearSolver.MaxIterations",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\](?:(?!^\\[).)*?^MaxIterations[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.ResidualReduction",
+          "name": "LinearSolver.ResidualReduction",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\](?:(?!^\\[).)*?^ResidualReduction[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.SymmetrizeDirichlet",
+          "name": "LinearSolver.SymmetrizeDirichlet",
+          "dataType": "sc:Boolean",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\](?:(?!^\\[).)*?^SymmetrizeDirichlet[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.DirectSolverForVelocity",
+          "name": "LinearSolver.DirectSolverForVelocity",
+          "dataType": "sc:Boolean",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\](?:(?!^\\[).)*?^DirectSolverForVelocity[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.GMResRestart",
+          "name": "LinearSolver.GMResRestart",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\](?:(?!^\\[).)*?^GMResRestart[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Type",
+          "name": "LinearSolver.Type",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\](?:(?!^\\[).)*?^Type[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Verbosity",
+          "name": "LinearSolver.Verbosity",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\](?:(?!^\\[).)*?^Verbosity[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Preconditioner.Mode",
+          "name": "LinearSolver.Preconditioner.Mode",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\.Preconditioner\\](?:(?!^\\[).)*?^Mode[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Preconditioner.Iterations",
+          "name": "LinearSolver.Preconditioner.Iterations",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\.Preconditioner\\](?:(?!^\\[).)*?^Iterations[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Preconditioner.AmgSmootherIterations",
+          "name": "LinearSolver.Preconditioner.AmgSmootherIterations",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\.Preconditioner\\](?:(?!^\\[).)*?^AmgSmootherIterations[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Preconditioner.AmgDefaultAggregationDimension",
+          "name": "LinearSolver.Preconditioner.AmgDefaultAggregationDimension",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\.Preconditioner\\](?:(?!^\\[).)*?^AmgDefaultAggregationDimension[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Preconditioner.AmgMinAggregateSize",
+          "name": "LinearSolver.Preconditioner.AmgMinAggregateSize",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\.Preconditioner\\](?:(?!^\\[).)*?^AmgMinAggregateSize[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Preconditioner.AmgMaxAggregateSize",
+          "name": "LinearSolver.Preconditioner.AmgMaxAggregateSize",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\.Preconditioner\\](?:(?!^\\[).)*?^AmgMaxAggregateSize[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Preconditioner.AmgAdditive",
+          "name": "LinearSolver.Preconditioner.AmgAdditive",
+          "dataType": "sc:Boolean",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\.Preconditioner\\](?:(?!^\\[).)*?^AmgAdditive[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Preconditioner.AmgGamma",
+          "name": "LinearSolver.Preconditioner.AmgGamma",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\.Preconditioner\\](?:(?!^\\[).)*?^AmgGamma[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/LinearSolver.Preconditioner.AmgCriterionSymmetric",
+          "name": "LinearSolver.Preconditioner.AmgCriterionSymmetric",
+          "dataType": "sc:Boolean",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[LinearSolver\\.Preconditioner\\](?:(?!^\\[).)*?^AmgCriterionSymmetric[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Newton.MinSteps",
+          "name": "Newton.MinSteps",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Newton\\](?:(?!^\\[).)*?^MinSteps[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Newton.EnableAbsoluteResidualCriterion",
+          "name": "Newton.EnableAbsoluteResidualCriterion",
+          "dataType": "sc:Boolean",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Newton\\](?:(?!^\\[).)*?^EnableAbsoluteResidualCriterion[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "tool_parameters/Newton.MaxAbsoluteResidual",
+          "name": "Newton.MaxAbsoluteResidual",
+          "dataType": "sc:Float",
+          "source": {
+            "fileObject": {
+              "@id": "dumux-input"
+            },
+            "extract": {
+              "fileProperty": "content"
+            },
+            "transform": {
+              "regex": "(?ms).*?^\\[Newton\\](?:(?!^\\[).)*?^MaxAbsoluteResidual[ \\t]*=[ \\t]*([^\\r\\n#]+)"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "datePublished": "2026-11-24",
+  "version": "3.1",
+  "citeAs": "https://github.com/Simulation-Benchmarks/rotating-cylinders"
+}

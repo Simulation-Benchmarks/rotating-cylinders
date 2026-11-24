@@ -33,6 +33,14 @@ subdirectory and Snakemake workflow:
 Each implementation varies the radial resolution and stores results as
 RO-Crates uploaded to RoHub for provenance tracking.
 
+The DuMux tool defaults are described in
+[`dumux/tool-parameters.croissant.json`](dumux/tool-parameters.croissant.json).
+The Snakemake workflow copies `params.input` from `/dumux/rotating-cylinders/`
+in the image into each result folder. The Croissant file is copied there too,
+so its relative `contentUrl` points to the copied input. The runner passes the
+Croissant file to `semantic-benchmark`, which uses `mlcroissant` to extract the
+declared fields and add them to the main RO-Crate.
+
 ## Shared Benchmark Package
 
 Reusable semantic benchmark, RO-Crate, and RoHub helpers are provided by the

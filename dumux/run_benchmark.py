@@ -134,7 +134,12 @@ def run_benchmark(args: Namespace) -> None:
         )
         for parameter_file in sorted(BENCHMARK_DIR.glob("parameters_*.json"))
     ]
-
+    if not subcrate_paths:
+        raise ValueError("No DuMux configurations were generated")
+    parameter_files = [path.parent / "params.input" for path in subcrate_paths]
+    parameter_content = parameter_files[0].read_bytes()
+    if any(path.read_bytes() != parameter_content for path in parameter_files[1:]):
+        raise ValueError("DuMux runs used different params.input files")
     rocrate_name = args.rocrate_name or f'{main_metadata.software_name}-RoCrate.zip'
     rocrate_path = args.result_path / rocrate_name
     runner.create_main_rocrate(
@@ -143,6 +148,7 @@ def run_benchmark(args: Namespace) -> None:
         rocrate_path,
         subcrate_paths=subcrate_paths,
         workflow_path=args.workflow_path,
+        tool_parameters_file=parameter_files[0].parent / "tool-parameters.croissant.json",
     )
     LOGGER.info("Main RO-Crate created at %s.", rocrate_path)
 
