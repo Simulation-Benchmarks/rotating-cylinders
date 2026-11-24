@@ -4,7 +4,7 @@ from pathlib import Path
 
 # Use workflow.basedir to find the root relative to the Snakefile
 shared_dir = Path(workflow.basedir).parent
-container_image = f"ghcr.io/simulation-benchmarks/dumux-rotating-cylinders:{config.get('software_version', '3.1')}"
+container_image = f"ghcr.io/simulation-benchmarks/dumux-rotating-cylinders:{config.get('software_version', '3.9')}"
 container_shared_dir = "/dumux/shared"
 
 rule all:
@@ -43,6 +43,13 @@ rule run_simulation:
             set -euo pipefail
             cd /dumux/rotating-cylinders/build-cmake/test/freeflow/navierstokes/rotatingcylinders
             
+            # The image ships OpenBLAS 0.3.20, which does not know recent CPUs. On Intel
+            # Xeon 6 (Granite Rapids) GitHub runners it selects its Cooperlake kernels,
+            # which give wrong results there: UMFPack then reports a singular matrix.
+            # Pin the AVX2 kernels, which every current x86-64 CPU supports. This also
+            # makes the results independent of the runner the job lands on.
+            export OPENBLAS_CORETYPE=Haswell
+
             # Run simulation. We use the container_shared_dir mount point to save results back to the host
             ./test_ff_navierstokes_rotatingcylinders \
                 -Grid.Cells0 "{half_radial} {half_radial}" \
