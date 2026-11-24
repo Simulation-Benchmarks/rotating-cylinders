@@ -57,8 +57,7 @@
       "@id": "dumux-input",
       "name": "DuMux input file",
       "contentUrl": "params.input",
-      "encodingFormat": "text/plain",
-      "sha256": "3f3bbff39fe9f919063002e820ee8dbc34b0912c8e42130baa0717ac1b7e00d2"
+      "encodingFormat": "text/plain"
     }
   ],
   "recordSet": [
