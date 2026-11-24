@@ -6,7 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- GitHub Actions workflow `.github/workflows/repo2docker.yml` that builds the repository image (running `postBuild`) on every push and publishes it to `ghcr.io/simulation-benchmarks/rotating-cylinders` from `main` and tags.
+
 ### Changed
+- The README badge launches the notebook on the NFDI JupyterHub from the GHCR image instead of on mybinder.org, as in the plate-with-hole benchmark.
+- Notebook: runs that do not report a plotted quantity are skipped instead of producing empty legend entries.
 - Replaced the Zenodo DOI placeholder with the real DOI (`10.5281/zenodo.21922264`) in `README.md`, `CITATION.cff`, and `codemeta.json`, now that the GitHub–Zenodo integration has archived v0.1.0.
 - The DuMuX workflow now pulls its container image from the GitHub mirror `ghcr.io/simulation-benchmarks/dumux-rotating-cylinders`, because `git.iws.uni-stuttgart.de` is no longer reachable from GitHub-hosted runners (#25).
 
