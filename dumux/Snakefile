@@ -44,7 +44,7 @@ rule run_simulation:
             f"""
             set -euo pipefail
             cd /dumux/rotating-cylinders/build-cmake/test/freeflow/navierstokes/rotatingcylinders
-            cp params.input "{container_shared_dir}/results/{conf_name}/params.input"
+            cp /dumux/rotating-cylinders/test/freeflow/navierstokes/rotatingcylinders/params.input "{container_shared_dir}/results/{conf_name}/params.input"
             
             # Run simulation. We use the container_shared_dir mount point to save results back to the host
             ./test_ff_navierstokes_rotatingcylinders \
