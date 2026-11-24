@@ -43,6 +43,15 @@ rule run_simulation:
             set -euo pipefail
             cd /dumux/rotating-cylinders/build-cmake/test/freeflow/navierstokes/rotatingcylinders
             
+            # >>> TEMPORARY DIAGNOSTICS (to be removed) >>>
+            echo "DIAG cpu: $(grep -m1 'model name' /proc/cpuinfo) / $(nproc) cores / flags avx512f: $(grep -c avx512f /proc/cpuinfo)"
+            for variant in "default:" "1thread:OPENBLAS_NUM_THREADS=1" "haswell:OPENBLAS_CORETYPE=Haswell" "haswell1thread:OPENBLAS_CORETYPE=Haswell OPENBLAS_NUM_THREADS=1"; do
+                name="${{variant%%:*}}"; vars="${{variant#*:}}"
+                env $vars OPENBLAS_VERBOSE=2 ./test_ff_navierstokes_rotatingcylinders                     -Grid.Cells0 "{half_radial} {half_radial}" -Grid.Cells1 "{c_angular}"                     -Grid.Grading0 "{grading} -{grading}" -Grid.Radial0 "{r1} {midpoint} {r2}"                     -Problem.Omega1 "{omega1}" -Problem.Omega2 "{omega2}"                     -Problem.Name "/tmp/diag_$name" > "/tmp/diag_$name.log" 2>&1 && rc=ok || rc=FAILED
+                echo "DIAG $name: $rc | $(grep -m1 -i 'core:' /tmp/diag_$name.log) | $(grep -m1 'Condition number' /tmp/diag_$name.log)"
+            done
+            # <<< TEMPORARY DIAGNOSTICS <<<
+
             # Run simulation. We use the container_shared_dir mount point to save results back to the host
             ./test_ff_navierstokes_rotatingcylinders \
                 -Grid.Cells0 "{half_radial} {half_radial}" \
