@@ -50,13 +50,11 @@ are uploaded to RoHub one at a time.
 
 ## Interactive Benchmark Evaluation
 
-The provenance notebook under `notebooks/RoCrate.ipynb` fetches run data from
-RoHub and plots the two convergence metrics against the number of radial cells.
+Click the badge to open the pre-built notebook on the NFDI JupyterHub and explore the provenance plots interactively:
 
-Click the badge to open the pre-built notebook on Binder and explore the
-provenance plots interactively:
+[![NFDI](https://nfdi-jupyter.de/images/nfdi_badge.svg)](https://hub.nfdi-jupyter.de/hub/api/start?name=Rotating%20Cylinders%20Benchmark&option=custom&system=JSC-Cloud&custom.customimage=ghcr.io%2Fsimulation-benchmarks%2Frotating-cylinders%3Alatest&flavor=xl1nfdi&profile=custom&service=jupyterlab&default_url=%2Flab%2Ftree%2Fnotebooks%2Fbenchmark-results.ipynb)
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Simulation-Benchmarks/rotating-cylinders/main?labpath=notebooks%2Fbenchmark-results.ipynb)
+The notebook fetches run data from RoHub and plots the relative L2 pressure and velocity errors against the number of radial cells, grouped by tool. The notebook is meant as a starting point: change the selected parameters and metrics or the plotting code to answer your own questions. See [docs/notebook-pipeline.md](docs/notebook-pipeline.md) for details on how the notebook is built.
 
 ## Acknowledgments
 

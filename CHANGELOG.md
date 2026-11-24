@@ -6,7 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- GitHub Actions workflow `.github/workflows/repo2docker.yml` that builds the repository image (running `postBuild`) on every push and publishes it to `ghcr.io/simulation-benchmarks/rotating-cylinders` from `main` and tags.
+
 ### Changed
+- The README badge launches the notebook on the NFDI JupyterHub from the GHCR image instead of on mybinder.org, as in the plate-with-hole benchmark.
+- Notebook: runs that do not report a plotted quantity are skipped instead of producing empty legend entries.
 - DuMuX now runs from image `ghcr.io/simulation-benchmarks/dumux-rotating-cylinders:3.9`, which fixes the pressure in one cell and thereby removes the pressure null space. The old image factorized a numerically singular matrix and failed on some runners for configuration `100_0_20_80`; the metrics are unchanged. The recorded software version is now `3.9`, the DuMuX release the image is built from.
 - The DuMuX run pins OpenBLAS to its AVX2 (Haswell) kernels. On Intel Xeon 6 (Granite Rapids) GitHub runners, the OpenBLAS 0.3.20 in the image selects Cooperlake kernels that give wrong results, so UMFPack reported a singular matrix and the run aborted.
 - Replaced the Zenodo DOI placeholder with the real DOI (`10.5281/zenodo.21922264`) in `README.md`, `CITATION.cff`, and `codemeta.json`, now that the GitHub–Zenodo integration has archived v0.1.0.
